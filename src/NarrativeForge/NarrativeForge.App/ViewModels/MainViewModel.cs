@@ -31,6 +31,11 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isConnected;
 
+    [ObservableProperty]
+    private bool _showGraphEditor;
+
+    public GraphEditorViewModel GraphEditorViewModel { get; } = new();
+
     public ObservableCollection<ProjectDto> Projects { get; } = [];
 
     public MainViewModel()
@@ -176,6 +181,24 @@ public partial class MainViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private void OpenDialogueTree()
+    {
+        GraphEditorViewModel.ClearGraphCommand.Execute(null);
+        GraphEditorViewModel.GraphName = "New Dialogue Tree";
+        ShowGraphEditor = true;
+        StatusText = "Dialogue tree editor opened.";
+    }
+
+    [RelayCommand]
+    private void OpenQuestGraph()
+    {
+        GraphEditorViewModel.ClearGraphCommand.Execute(null);
+        GraphEditorViewModel.GraphName = "New Quest Graph";
+        ShowGraphEditor = true;
+        StatusText = "Quest graph editor opened.";
     }
 
 }
