@@ -18,9 +18,15 @@ from NarrativeForge.Engine.models import (
     Character,
     CharacterRole,
     CharacterArc,
+    DialogueExchange,
+    DialogueLine,
     GameGenre,
     PersonalityProfile,
     Project,
+    Quest,
+    QuestObjective,
+    QuestPrerequisite,
+    QuestReward,
 )
 
 
@@ -145,6 +151,77 @@ class CharacterRow(Base):
         )
 
 
+class QuestRow(Base):
+    __tablename__ = "quests"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    data_json = Column(Text, default="{}")
+
+    def to_model(self) -> Quest:
+        data = json.loads(self.data_json)
+        return Quest(
+            id=UUID(self.id),
+            name=self.name,
+            description=data.get("description", ""),
+            objectives=[QuestObjective(**obj) for obj in data.get("objectives", [])],
+            prerequisites=[QuestPrerequisite(**prep) for prep in data.get("prerequisites", [])],
+            rewards=QuestReward(**data.get("rewards", {})),
+            faction_id=UUID(data["faction_id"]) if data.get("faction_id") else None,
+            is_main_quest=data.get("is_main_quest", False),
+        )
+
+    @classmethod
+    def from_model(cls, quest: Quest, project_id: UUID) -> "QuestRow":
+        data = {
+            "description": quest.description,
+            "objectives": [obj.model_dump(mode="json") for obj in quest.objectives],
+            "prerequisites": [prep.model_dump(mode="json") for prep in quest.prerequisites],
+            "rewards": quest.rewards.model_dump(mode="json"),
+            "faction_id": str(quest.faction_id) if quest.faction_id else None,
+            "is_main_quest": quest.is_main_quest,
+        }
+        return cls(
+            id=str(quest.id),
+            project_id=str(project_id),
+            name=quest.name,
+            data_json=json.dumps(data),
+        )
+
+
+class DialogueRow(Base):
+    __tablename__ = "dialogues"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    exchange_id = Column(String, nullable=False)
+    data_json = Column(Text, default="{}")
+
+    def to_model(self) -> DialogueExchange:
+        data = json.loads(self.data_json)
+        return DialogueExchange(
+            id=UUID(self.exchange_id),
+            lines=[DialogueLine(**line) for line in data.get("lines", [])],
+            context=data.get("context", ""),
+            mood=data.get("mood", ""),
+        )
+
+    @classmethod
+    def from_model(cls, exchange: DialogueExchange, project_id: UUID) -> "DialogueRow":
+        data = {
+            "lines": [line.model_dump(mode="json") for line in exchange.lines],
+            "context": exchange.context,
+            "mood": exchange.mood,
+        }
+        return cls(
+            id=str(exchange.id),
+            project_id=str(project_id),
+            exchange_id=str(exchange.id),
+            data_json=json.dumps(data),
+        )
+
+
 class Database:
     def __init__(self, db_url: str = "sqlite+aiosqlite:///:memory:"):
         self.db_url = db_url
@@ -226,3 +303,47 @@ class Database:
             )
             await session.commit()
             return result.rowcount > 0
+
+    async def create_quest(self, project_id: UUID, quest: Quest) -> Quest:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = QuestRow.from_model(quest, project_id)
+            session.add(row)
+            await session.commit()
+            return quest
+
+    async def get_quest(self, project_id: UUID, quest_id: UUID) -> Quest | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(QuestRow).where(
+                    QuestRow.id == str(quest_id),
+                    QuestRow.project_id == str(project_id),
+                )
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_quests(self, project_id: UUID) -> list[Quest]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(QuestRow).where(QuestRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def create_dialogue(self, project_id: UUID, exchange: DialogueExchange) -> DialogueExchange:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = DialogueRow.from_model(exchange, project_id)
+            session.add(row)
+            await session.commit()
+            return exchange
+
+    async def list_dialogues(self, project_id: UUID) -> list[DialogueExchange]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(DialogueRow).where(DialogueRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]

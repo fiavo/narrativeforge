@@ -5,8 +5,13 @@ import pytest
 from NarrativeForge.Engine.models import (
     Character,
     CharacterRole,
+    DialogueExchange,
+    DialogueLine,
     GameGenre,
     Project,
+    Quest,
+    QuestObjective,
+    QuestReward,
     StoryBible,
 )
 from NarrativeForge.Engine.storage.database import Database
@@ -142,6 +147,69 @@ class TestDatabase:
         assert retrieved.target_audience == "Adults"
         assert retrieved.themes == ["identity", "technology"]
         assert retrieved.settings == {"difficulty": "hard"}
+
+    async def test_create_and_get_quest(self, db, project):
+        await db.create_project(project)
+        quest = Quest(
+            name="Find the Sword",
+            description="Locate the legendary sword in the cave.",
+            objectives=[QuestObjective(description="Enter the cave", type="explore")],
+            rewards=QuestReward(xp=100, gold=50),
+            is_main_quest=True,
+        )
+        await db.create_quest(project.id, quest)
+        retrieved = await db.get_quest(project.id, quest.id)
+        assert retrieved is not None
+        assert retrieved.name == "Find the Sword"
+        assert retrieved.description == "Locate the legendary sword in the cave."
+        assert len(retrieved.objectives) == 1
+        assert retrieved.objectives[0].description == "Enter the cave"
+        assert retrieved.rewards.xp == 100
+        assert retrieved.is_main_quest is True
+
+    async def test_list_quests(self, db, project):
+        await db.create_project(project)
+        q1 = Quest(name="Quest 1")
+        q2 = Quest(name="Quest 2")
+        await db.create_quest(project.id, q1)
+        await db.create_quest(project.id, q2)
+        quests = await db.list_quests(project.id)
+        assert len(quests) == 2
+        names = {q.name for q in quests}
+        assert names == {"Quest 1", "Quest 2"}
+
+    async def test_create_and_get_dialogue(self, db, project):
+        await db.create_project(project)
+        from uuid import uuid4
+        char_id = uuid4()
+        exchange = DialogueExchange(
+            lines=[
+                DialogueLine(character_id=char_id, character_name="Hero", text="Hello!"),
+                DialogueLine(character_id=char_id, character_name="Villain", text="Goodbye!"),
+            ],
+            context="First meeting",
+            mood="tense",
+        )
+        await db.create_dialogue(project.id, exchange)
+        dialogues = await db.list_dialogues(project.id)
+        assert len(dialogues) == 1
+        retrieved = dialogues[0]
+        assert retrieved.context == "First meeting"
+        assert retrieved.mood == "tense"
+        assert len(retrieved.lines) == 2
+        assert retrieved.lines[0].text == "Hello!"
+        assert retrieved.lines[1].text == "Goodbye!"
+
+    async def test_list_dialogues(self, db, project):
+        await db.create_project(project)
+        from uuid import uuid4
+        char_id = uuid4()
+        d1 = DialogueExchange(lines=[DialogueLine(character_id=char_id, character_name="A", text="Hi")])
+        d2 = DialogueExchange(lines=[DialogueLine(character_id=char_id, character_name="B", text="Hey")])
+        await db.create_dialogue(project.id, d1)
+        await db.create_dialogue(project.id, d2)
+        dialogues = await db.list_dialogues(project.id)
+        assert len(dialogues) == 2
 
 
 class TestJsonStore:
