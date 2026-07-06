@@ -7,6 +7,14 @@ from .lore import LoreEntry
 from .story_bible import Faction, StoryBible
 from .dialogue import DialogueLine, DialogueExchange, DialogueResult
 from .quest import QuestObjective, QuestPrerequisite, QuestReward, Quest
+from .dialogue_tree import (
+    DialogueNodeType,
+    DialogueNode,
+    DialogueChoice,
+    DialogueCondition,
+    DialogueEdge,
+    DialogueTree,
+)
 
 __all__ = [
     "GameGenre",
@@ -29,4 +37,10 @@ __all__ = [
     "QuestPrerequisite",
     "QuestReward",
     "Quest",
+    "DialogueNodeType",
+    "DialogueNode",
+    "DialogueChoice",
+    "DialogueCondition",
+    "DialogueEdge",
+    "DialogueTree",
 ]
