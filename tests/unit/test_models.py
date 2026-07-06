@@ -1,4 +1,6 @@
 from uuid import uuid4
+import pytest
+from pydantic import ValidationError
 from NarrativeForge.Engine.models import (
     GameGenre,
     Project,
@@ -90,15 +92,21 @@ class TestTimelineEvent:
 
 class TestRelationship:
     def test_relationship_creation(self):
-        rel = Relationship(type=RelationshipType.Enemy, strength=80)
+        src = str(uuid4())
+        tgt = str(uuid4())
+        rel = Relationship(source_id=src, target_id=tgt, type=RelationshipType.Enemy, strength=80)
+        assert rel.source_id == src
+        assert rel.target_id == tgt
         assert rel.type == RelationshipType.Enemy
         assert rel.strength == 80
         assert rel.is_bidirectional is False
 
     def test_relationship_strength_bounds(self):
-        rel = Relationship(strength=0)
+        src = str(uuid4())
+        tgt = str(uuid4())
+        rel = Relationship(source_id=src, target_id=tgt, strength=0)
         assert rel.strength == 0
-        rel = Relationship(strength=100)
+        rel = Relationship(source_id=src, target_id=tgt, strength=100)
         assert rel.strength == 100
 
 
@@ -124,10 +132,30 @@ class TestStoryBible:
         project_id = uuid4()
         char_id = uuid4()
         loc_id = uuid4()
+        char = Character(name="Hero")
+        loc = Location(name="Castle")
         bible = StoryBible(
             project_id=project_id,
-            characters={char_id: {"name": "Hero"}},
-            locations={loc_id: {"name": "Castle"}},
+            characters={char_id: char},
+            locations={loc_id: loc},
         )
         assert char_id in bible.characters
         assert loc_id in bible.locations
+        assert bible.characters[char_id].name == "Hero"
+        assert bible.locations[loc_id].name == "Castle"
+
+
+class TestValidation:
+    def test_project_missing_name_raises(self):
+        with pytest.raises(ValidationError):
+            Project(genre=GameGenre.RPG)
+
+    def test_relationship_strength_over_100_raises(self):
+        src = str(uuid4())
+        tgt = str(uuid4())
+        with pytest.raises(ValidationError):
+            Relationship(source_id=src, target_id=tgt, strength=101)
+
+    def test_invalid_genre_string_raises(self):
+        with pytest.raises(ValidationError):
+            Project(name="Test", genre="InvalidGenre")

@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 
+from .character import Character
+from .location import Location
 from .timeline import TimelineEvent
 from .relationship import Relationship
 
@@ -26,8 +28,8 @@ class Faction(BaseModel):
 class StoryBible(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     project_id: UUID
-    characters: dict[UUID, dict] = Field(default_factory=dict)
-    locations: dict[UUID, dict] = Field(default_factory=dict)
+    characters: dict[UUID, Character] = Field(default_factory=dict)
+    locations: dict[UUID, Location] = Field(default_factory=dict)
     factions: dict[UUID, Faction] = Field(default_factory=dict)
     timeline: list[TimelineEvent] = Field(default_factory=list)
     lore_entries: dict[UUID, LoreEntry] = Field(default_factory=dict)
