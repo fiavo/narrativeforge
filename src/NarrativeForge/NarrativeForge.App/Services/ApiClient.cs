@@ -51,6 +51,66 @@ public class ApiClient : IDisposable
         return await response.Content.ReadFromJsonAsync<GenerateResponseDto>();
     }
 
+    public async Task<List<DialogueTreeDto>> GetDialogueTreesAsync(Guid projectId)
+    {
+        var response = await _httpClient.GetAsync($"/api/projects/{projectId}/dialogue-trees");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<DialogueTreeDto>>() ?? [];
+    }
+
+    public async Task<DialogueTreeDto?> GetDialogueTreeAsync(Guid projectId, Guid id)
+    {
+        var response = await _httpClient.GetAsync($"/api/projects/{projectId}/dialogue-trees/{id}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            return null;
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<DialogueTreeDto>();
+    }
+
+    public async Task<DialogueTreeDto?> CreateDialogueTreeAsync(Guid projectId, CreateDialogueTreeRequest request)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"/api/projects/{projectId}/dialogue-trees", request);
+        if (!response.IsSuccessStatusCode)
+            return null;
+        return await response.Content.ReadFromJsonAsync<DialogueTreeDto>();
+    }
+
+    public async Task<bool> DeleteDialogueTreeAsync(Guid projectId, Guid id)
+    {
+        var response = await _httpClient.DeleteAsync($"/api/projects/{projectId}/dialogue-trees/{id}");
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<List<QuestGraphDto>> GetQuestGraphsAsync(Guid projectId)
+    {
+        var response = await _httpClient.GetAsync($"/api/projects/{projectId}/quest-graphs");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<QuestGraphDto>>() ?? [];
+    }
+
+    public async Task<QuestGraphDto?> GetQuestGraphAsync(Guid projectId, Guid id)
+    {
+        var response = await _httpClient.GetAsync($"/api/projects/{projectId}/quest-graphs/{id}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            return null;
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<QuestGraphDto>();
+    }
+
+    public async Task<QuestGraphDto?> CreateQuestGraphAsync(Guid projectId, CreateQuestGraphRequest request)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"/api/projects/{projectId}/quest-graphs", request);
+        if (!response.IsSuccessStatusCode)
+            return null;
+        return await response.Content.ReadFromJsonAsync<QuestGraphDto>();
+    }
+
+    public async Task<bool> DeleteQuestGraphAsync(Guid projectId, Guid id)
+    {
+        var response = await _httpClient.DeleteAsync($"/api/projects/{projectId}/quest-graphs/{id}");
+        return response.IsSuccessStatusCode;
+    }
+
     public void Dispose()
     {
         _httpClient.Dispose();

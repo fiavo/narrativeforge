@@ -60,3 +60,19 @@ public class QuestGraphDto
     public List<GraphNodeDto> Nodes { get; set; } = [];
     public List<GraphEdgeDto> Edges { get; set; } = [];
 }
+
+public class CreateDialogueTreeRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public Guid StartNodeId { get; set; }
+    public List<GraphNodeDto> Nodes { get; set; } = [];
+    public List<GraphEdgeDto> Edges { get; set; } = [];
+}
+
+public class CreateQuestGraphRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public Guid StartNodeId { get; set; }
+    public List<GraphNodeDto> Nodes { get; set; } = [];
+    public List<GraphEdgeDto> Edges { get; set; } = [];
+}
