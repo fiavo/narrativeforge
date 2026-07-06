@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NarrativeForge.Core", "NarrativeForge.Core\NarrativeForge.Core.csproj", "{A2E6F20E-F946-46EA-A5C0-C679868D2E94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NarrativeForge.App", "NarrativeForge.App\NarrativeForge.App.csproj", "{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{A2E6F20E-F946-46EA-A5C0-C679868D2E94}.Release|x64.Build.0 = Release|Any CPU
 		{A2E6F20E-F946-46EA-A5C0-C679868D2E94}.Release|x86.ActiveCfg = Release|Any CPU
 		{A2E6F20E-F946-46EA-A5C0-C679868D2E94}.Release|x86.Build.0 = Release|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Debug|x64.Build.0 = Debug|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Debug|x86.Build.0 = Debug|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|x64.ActiveCfg = Release|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|x64.Build.0 = Release|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|x86.ActiveCfg = Release|Any CPU
+		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

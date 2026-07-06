@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "sqIP22HGYL8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\cratu\\Desktop\\NarrativeForge\\src\\NarrativeForge\\NarrativeForge.App\\NarrativeForge.App.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\cratu\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.0\\communitytoolkit.mvvm.8.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}
