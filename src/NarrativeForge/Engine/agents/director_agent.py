@@ -20,6 +20,7 @@ DIRECTOR_SYSTEM_PROMPT = (
     "them into structured sub-tasks for specialized agents.\n\n"
     "For each request, produce a JSON object with:\n"
     '- "request_type": one of "generate", "expand", "revise", "analyze", "query"\n'
+    '- "classification": one of "dialogue", "quest", "lore", "story", "mixed"\n'
     '- "sub_tasks": an array of objects with "agent" (one of "story", "consistency") '
     'and "instruction" fields\n'
     '- "summary": a one-line description of the plan\n'
@@ -71,6 +72,7 @@ class DirectorAgent(BaseAgent):
             content=plan,
             metadata={
                 "request_type": plan.get("request_type", "unknown"),
+                "classification": plan.get("classification", "story"),
                 "sub_task_count": len(plan.get("sub_tasks", [])),
             },
         )

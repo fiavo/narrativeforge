@@ -305,6 +305,57 @@ class TestDirectorAgent:
         assert provider.last_options is not None
         assert provider.last_options.temperature == 0.3
 
+    @pytest.mark.asyncio
+    async def test_director_classifies_dialogue(self):
+        plan = {
+            "request_type": "generate",
+            "classification": "dialogue",
+            "sub_tasks": [{"agent": "story", "instruction": "Write dialogue between Aria and the villain"}],
+            "summary": "Generate dialogue scene",
+        }
+        provider = FakeProvider(json.dumps(plan))
+        agent = DirectorAgent(provider)
+        ctx = AgentContext(project=_make_project(), user_request="Write a conversation between Aria and the villain")
+
+        result = await agent.execute(ctx)
+
+        assert result.content["classification"] == "dialogue"
+        assert result.metadata["classification"] == "dialogue"
+
+    @pytest.mark.asyncio
+    async def test_director_classifies_quest(self):
+        plan = {
+            "request_type": "generate",
+            "classification": "quest",
+            "sub_tasks": [{"agent": "story", "instruction": "Create a fetch quest for the artifact"}],
+            "summary": "Generate quest content",
+        }
+        provider = FakeProvider(json.dumps(plan))
+        agent = DirectorAgent(provider)
+        ctx = AgentContext(project=_make_project(), user_request="Design a quest to find the lost artifact")
+
+        result = await agent.execute(ctx)
+
+        assert result.content["classification"] == "quest"
+        assert result.metadata["classification"] == "quest"
+
+    @pytest.mark.asyncio
+    async def test_director_classifies_lore(self):
+        plan = {
+            "request_type": "generate",
+            "classification": "lore",
+            "sub_tasks": [{"agent": "story", "instruction": "Write the history of the ancient kingdom"}],
+            "summary": "Generate lore content",
+        }
+        provider = FakeProvider(json.dumps(plan))
+        agent = DirectorAgent(provider)
+        ctx = AgentContext(project=_make_project(), user_request="Explain the history of the ancient kingdom")
+
+        result = await agent.execute(ctx)
+
+        assert result.content["classification"] == "lore"
+        assert result.metadata["classification"] == "lore"
+
 
 class TestConsistencyChecker:
     @pytest.mark.asyncio
