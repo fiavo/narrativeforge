@@ -1,0 +1,11 @@
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\bin\Debug\net9.0\NarrativeForge.Core.deps.json
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\bin\Debug\net9.0\NarrativeForge.Core.dll
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\bin\Debug\net9.0\NarrativeForge.Core.pdb
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\NarrativeForge.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\NarrativeForge.Core.AssemblyInfoInputs.cache
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\NarrativeForge.Core.AssemblyInfo.cs
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\NarrativeForge.Core.csproj.CoreCompileInputs.cache
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\NarrativeForge.Core.dll
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\refint\NarrativeForge.Core.dll
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\NarrativeForge.Core.pdb
+C:\Users\cratu\Desktop\NarrativeForge\src\NarrativeForge\NarrativeForge.Core\obj\Debug\net9.0\ref\NarrativeForge.Core.dll

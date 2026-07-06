@@ -1,0 +1,35 @@
+namespace NarrativeForge.Core.Enums;
+
+public enum GameGenre
+{
+    RPG,
+    JRPG,
+    OpenWorld,
+    Horror,
+    SciFi,
+    Fantasy,
+    Medieval,
+    Cyberpunk,
+    Detective,
+    Zombie,
+    Psychological,
+    Survival,
+    Romance,
+    Comedy,
+    DarkFantasy,
+    Steampunk,
+    Historical,
+    Mythology,
+    Lovecraftian,
+    Noir,
+    Military,
+    PostApocalypse,
+    Vampire,
+    Werewolf,
+    Mystery,
+    Thriller,
+    Superhero,
+    Crime,
+    School,
+    Anime
+}
