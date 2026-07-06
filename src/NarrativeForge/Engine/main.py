@@ -7,7 +7,16 @@ from NarrativeForge.Engine.config import config
 from NarrativeForge.Engine.storage.database import Database
 from NarrativeForge.Engine.ai_providers import OpenAICompatibleProvider
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
-from NarrativeForge.Engine.api import projects_router, generation_router, init_projects, init_generation
+from NarrativeForge.Engine.api import (
+    projects_router,
+    generation_router,
+    dialogues_router,
+    quests_router,
+    init_projects,
+    init_generation,
+    init_dialogues,
+    init_quests,
+)
 
 db = Database(config.database_url)
 provider = OpenAICompatibleProvider(base_url="http://127.0.0.1:11434", model=config.default_model)
@@ -19,6 +28,8 @@ async def lifespan(app: FastAPI):
     await db.init()
     init_projects(db)
     init_generation(db, orchestrator)
+    init_dialogues(db)
+    init_quests(db)
     yield
     await db.close()
 
@@ -35,6 +46,8 @@ app.add_middleware(
 
 app.include_router(projects_router)
 app.include_router(generation_router)
+app.include_router(dialogues_router)
+app.include_router(quests_router)
 
 
 @app.get("/health")

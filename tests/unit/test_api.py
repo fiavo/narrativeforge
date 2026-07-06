@@ -6,7 +6,7 @@ from httpx import ASGITransport, AsyncClient
 from NarrativeForge.Engine.main import app
 from NarrativeForge.Engine.storage.database import Database
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
-from NarrativeForge.Engine.api import init_projects, init_generation
+from NarrativeForge.Engine.api import init_projects, init_generation, init_dialogues, init_quests
 
 
 @pytest.fixture(autouse=True)
@@ -14,6 +14,8 @@ async def setup_db():
     test_db = Database("sqlite+aiosqlite:///:memory:")
     await test_db.init()
     init_projects(test_db)
+    init_dialogues(test_db)
+    init_quests(test_db)
 
     mock_provider = AsyncMock()
     mock_provider.complete.return_value = '{"result": "mocked"}'
@@ -127,3 +129,112 @@ async def test_direct_agent_invalid_name(client: AsyncClient):
     )
     assert resp.status_code == 400
     assert "Unknown agent" in resp.json()["detail"]
+
+
+async def test_create_dialogue_tree(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "Dialogue Test", "genre": "RPG"}
+    )
+    project_id = create_resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/dialogues",
+        json={
+            "name": "Intro Dialogue",
+            "start_node_id": "node1",
+            "nodes": {
+                "node1": {
+                    "id": "node1",
+                    "type": "text",
+                    "content": "Hello, traveler!",
+                }
+            },
+            "edges": [],
+        },
+    )
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["name"] == "Intro Dialogue"
+    assert data["start_node_id"] == "node1"
+    assert "node1" in data["nodes"]
+    assert data["nodes"]["node1"]["content"] == "Hello, traveler!"
+
+
+async def test_list_dialogue_trees(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "List Test", "genre": "Fantasy"}
+    )
+    project_id = create_resp.json()["id"]
+
+    await client.post(
+        f"/api/projects/{project_id}/dialogues",
+        json={"name": "Tree A", "start_node_id": "n1", "nodes": {}, "edges": []},
+    )
+    await client.post(
+        f"/api/projects/{project_id}/dialogues",
+        json={"name": "Tree B", "start_node_id": "n2", "nodes": {}, "edges": []},
+    )
+
+    resp = await client.get(f"/api/projects/{project_id}/dialogues")
+    assert resp.status_code == 200
+    trees = resp.json()
+    assert len(trees) == 2
+    names = {t["name"] for t in trees}
+    assert names == {"Tree A", "Tree B"}
+
+
+async def test_parse_ink_dialogue(client: AsyncClient):
+    ink_script = """=== start ===
+Welcome, adventurer!
++ [Hello!] -> greet
++ [Goodbye] -> farewell
+
+=== greet ===
+Nice to meet you!
+-> END
+
+=== farewell ===
+Farewell!
+-> END"""
+
+    resp = await client.post(
+        "/api/dialogues/parse",
+        json={"script": ink_script, "name": "Parsed Dialogue"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    tree = data["tree"]
+    assert tree["name"] == "Parsed Dialogue"
+    assert tree["start_node_id"] != ""
+    assert len(tree["nodes"]) > 0
+    assert len(tree["edges"]) > 0
+
+
+async def test_create_quest_graph(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "Quest Test", "genre": "RPG"}
+    )
+    project_id = create_resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/quests",
+        json={
+            "name": "Main Quest",
+            "start_node_id": "start1",
+            "nodes": {
+                "start1": {
+                    "id": "start1",
+                    "type": "start",
+                    "name": "Begin Journey",
+                    "description": "Start your adventure",
+                }
+            },
+            "edges": [],
+        },
+    )
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["name"] == "Main Quest"
+    assert data["start_node_id"] == "start1"
+    assert "start1" in data["nodes"]
+    assert data["nodes"]["start1"]["description"] == "Start your adventure"
