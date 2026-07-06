@@ -23,16 +23,16 @@ class PipelineResult:
 class PipelineOrchestrator:
     def __init__(self, provider: AIProvider) -> None:
         self._provider = provider
-
-    @property
-    def provider(self) -> AIProvider:
-        return self._provider
         self._director = DirectorAgent(provider)
         self._story = StoryAgent(provider)
         self._dialogue = DialogueAgent(provider)
         self._quest = QuestAgent(provider)
         self._lore = LoreAgent(provider)
         self._checker = ConsistencyChecker(provider)
+
+    @property
+    def provider(self) -> AIProvider:
+        return self._provider
 
     def _build_agent_context(
         self, context: AgentContext, prev_results: dict[str, Any]
