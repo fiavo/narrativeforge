@@ -23,8 +23,6 @@ def _make_bible() -> tuple[StoryBible, dict]:
     castle_id = uuid4()
     forest_id = uuid4()
     guild_id = uuid4()
-    war_id = uuid4()
-
     hero = _make_character("Hero", CharacterRole.Protagonist)
     villain = _make_character("Villain", CharacterRole.Antagonist)
     castle = Location(name="Castle", type="Structure")

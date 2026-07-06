@@ -30,11 +30,6 @@ class NarrativeGraph:
     @classmethod
     def from_story_bible(cls, sb) -> NarrativeGraph:
         from NarrativeForge.Engine.models.story_bible import StoryBible
-        from NarrativeForge.Engine.models.character import Character
-        from NarrativeForge.Engine.models.location import Location
-        from NarrativeForge.Engine.models.story_bible import Faction
-        from NarrativeForge.Engine.models.timeline import TimelineEvent
-        from NarrativeForge.Engine.models.story_bible import LoreEntry
 
         assert isinstance(sb, StoryBible)
         graph = cls()
