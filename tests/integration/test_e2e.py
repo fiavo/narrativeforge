@@ -5,7 +5,7 @@ from httpx import ASGITransport, AsyncClient
 
 from NarrativeForge.Engine.main import app
 from NarrativeForge.Engine.storage.database import Database
-from NarrativeForge.Engine.api import init_projects, init_generation
+from NarrativeForge.Engine.api import init_projects, init_generation, init_dialogues, init_quests
 from NarrativeForge.Engine.ai_providers.base import AIProvider, CompletionOptions, Message
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
 
@@ -69,6 +69,8 @@ async def setup_db():
     orchestrator = PipelineOrchestrator(provider)
     init_projects(test_db)
     init_generation(test_db, orchestrator)
+    init_dialogues(test_db)
+    init_quests(test_db)
     yield
     await test_db.close()
 
@@ -214,6 +216,166 @@ async def test_lore_generation_flow(client: AsyncClient):
     assert "has_title" in data["metadata"]
     assert "has_content" in data["metadata"]
     assert "genre" in data["metadata"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+INK_DIALOGUE_SCRIPT = """\
+=== greet ===
+Hello there, adventurer.
++ [Hello] -> farewell
++ [Goodbye] -> farewell
+=== farewell ===
+Farewell, traveler.
+-> END
+"""
+
+INK_QUEST_SCRIPT = """\
+=== start_quest ===
+Find the ancient artifact hidden in the caves.
+-> objective_1
+=== objective_1 ===
+Navigate through the dark caves.
++ [Reward] -> quest_reward
+=== quest_reward ===
+You receive the artifact.
+-> END
+"""
+
+
+async def test_dialogue_tree_workflow(client: AsyncClient):
+    payload = {
+        "name": "Dialogue E2E Test",
+        "genre": "RPG",
+        "tone": "mysterious",
+        "themes": ["dialogue", "ink"],
+    }
+    resp = await client.post("/api/projects", json=payload)
+    assert resp.status_code == 201
+    project = resp.json()
+    project_id = project["id"]
+
+    tree_payload = {
+        "name": "Manual Tree",
+        "start_node_id": "n1",
+        "nodes": {
+            "n1": {
+                "id": "n1",
+                "type": "text",
+                "content": "Welcome!",
+                "choices": [],
+                "conditions": [],
+                "variables_set": {},
+                "next_node_id": "",
+            }
+        },
+        "edges": [],
+    }
+    resp = await client.post(f"/api/projects/{project_id}/dialogues", json=tree_payload)
+    assert resp.status_code == 201
+    tree = resp.json()
+    assert tree["name"] == "Manual Tree"
+    assert tree["start_node_id"] == "n1"
+    assert "n1" in tree["nodes"]
+
+    resp = await client.get(f"/api/projects/{project_id}/dialogues")
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
+
+    parse_payload = {"script": INK_DIALOGUE_SCRIPT, "name": "Ink Dialogue"}
+    resp = await client.post("/api/dialogues/parse", json=parse_payload)
+    assert resp.status_code == 200
+    parsed = resp.json()
+    ink_tree = parsed["tree"]
+    assert ink_tree["name"] == "Ink Dialogue"
+    assert len(ink_tree["nodes"]) > 0
+    assert ink_tree["start_node_id"] != ""
+    assert ink_tree["start_node_id"] in ink_tree["nodes"]
+
+    has_choices = any(
+        node.get("choices") for node in ink_tree["nodes"].values()
+    )
+    assert has_choices
+
+    resp = await client.get(f"/api/dialogues/{tree['id']}")
+    assert resp.status_code == 200
+    assert resp.json()["id"] == tree["id"]
+
+    resp = await client.delete(f"/api/dialogues/{tree['id']}")
+    assert resp.status_code == 204
+
+    resp = await client.get(f"/api/dialogues/{tree['id']}")
+    assert resp.status_code == 404
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_quest_graph_workflow(client: AsyncClient):
+    payload = {
+        "name": "Quest E2E Test",
+        "genre": "Fantasy",
+        "tone": "epic",
+        "themes": ["quest", "ink"],
+    }
+    resp = await client.post("/api/projects", json=payload)
+    assert resp.status_code == 201
+    project = resp.json()
+    project_id = project["id"]
+
+    graph_payload = {
+        "name": "Manual Graph",
+        "start_node_id": "q1",
+        "nodes": {
+            "q1": {
+                "id": "q1",
+                "type": "start",
+                "name": "begin",
+                "description": "Start the quest",
+                "objectives": [],
+                "rewards": {},
+                "conditions": [],
+                "next_node_ids": [],
+            }
+        },
+        "edges": [],
+    }
+    resp = await client.post(f"/api/projects/{project_id}/quests", json=graph_payload)
+    assert resp.status_code == 201
+    graph = resp.json()
+    assert graph["name"] == "Manual Graph"
+    assert graph["start_node_id"] == "q1"
+    assert "q1" in graph["nodes"]
+
+    resp = await client.get(f"/api/projects/{project_id}/quests")
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
+
+    parse_payload = {"script": INK_QUEST_SCRIPT, "name": "Ink Quest"}
+    resp = await client.post("/api/quests/parse", json=parse_payload)
+    assert resp.status_code == 200
+    parsed = resp.json()
+    ink_graph = parsed["graph"]
+    assert ink_graph["name"] == "Ink Quest"
+    assert len(ink_graph["nodes"]) > 0
+    assert ink_graph["start_node_id"] != ""
+    assert ink_graph["start_node_id"] in ink_graph["nodes"]
+
+    assert len(ink_graph["edges"]) > 0
+
+    node_types = [n["type"] for n in ink_graph["nodes"].values()]
+    assert "start" in node_types
+
+    resp = await client.get(f"/api/quests/{graph['id']}")
+    assert resp.status_code == 200
+    assert resp.json()["id"] == graph["id"]
+
+    resp = await client.delete(f"/api/quests/{graph['id']}")
+    assert resp.status_code == 204
+
+    resp = await client.get(f"/api/quests/{graph['id']}")
+    assert resp.status_code == 404
 
     resp = await client.delete(f"/api/projects/{project_id}")
     assert resp.status_code == 204
