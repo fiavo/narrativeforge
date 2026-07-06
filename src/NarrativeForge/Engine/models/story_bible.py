@@ -5,14 +5,7 @@ from .character import Character
 from .location import Location
 from .timeline import TimelineEvent
 from .relationship import Relationship
-
-
-class LoreEntry(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    title: str
-    content: str = ""
-    category: str = ""
-    is_locked: bool = False
+from .lore import LoreEntry
 
 
 class Faction(BaseModel):

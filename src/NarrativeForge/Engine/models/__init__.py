@@ -3,7 +3,10 @@ from .character import CharacterRole, PersonalityProfile, CharacterArc, Characte
 from .location import Location
 from .timeline import TimelineEvent
 from .relationship import RelationshipType, Relationship
-from .story_bible import LoreEntry, Faction, StoryBible
+from .lore import LoreEntry
+from .story_bible import Faction, StoryBible
+from .dialogue import DialogueLine, DialogueExchange, DialogueResult
+from .quest import QuestObjective, QuestPrerequisite, QuestReward, Quest
 
 __all__ = [
     "GameGenre",
@@ -19,4 +22,11 @@ __all__ = [
     "LoreEntry",
     "Faction",
     "StoryBible",
+    "DialogueLine",
+    "DialogueExchange",
+    "DialogueResult",
+    "QuestObjective",
+    "QuestPrerequisite",
+    "QuestReward",
+    "Quest",
 ]
