@@ -271,6 +271,166 @@ class TestPipelineOrchestrator:
         assert provider.last_options is opts
 
     @pytest.mark.asyncio
+    async def test_pipeline_routes_to_dialogue_agent(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "dialogue",
+            "sub_tasks": [{"agent": "story", "instruction": "Write dialogue"}],
+            "summary": "Generate dialogue",
+        }
+        dialogue_content = {
+            "dialogue_type": "conversation",
+            "exchanges": [
+                {"speaker": "Aria", "line": "Hello there."},
+                {"speaker": "Vex", "line": "Well, well."},
+            ],
+        }
+        consistency_report = {"score": 0.9, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "masterful dialogue writer": json.dumps(dialogue_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Write a dialogue between Aria and Vex",
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert result.stages_completed[0] == "Director"
+        assert "Dialogue" in result.stages_completed
+        assert result.stages_completed[-1] == "Consistency"
+        assert result.content == dialogue_content
+        assert result.metadata["classification"] == "dialogue"
+
+    @pytest.mark.asyncio
+    async def test_pipeline_lore_changes_applied(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "lore",
+            "sub_tasks": [],
+            "summary": "Generate lore",
+        }
+        lore_content = {
+            "title": "The Crystal Kingdoms",
+            "category": "history",
+            "content": "Ancient civilizations once thrived under crystalline skies.",
+            "tags": ["history", "crystal"],
+            "related_entries": [],
+        }
+        consistency_report = {"score": 0.95, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "masterful world-builder": json.dumps(lore_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        bible = _make_bible()
+        initial_lore_count = len(bible.lore_entries)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Create lore about the Crystal Kingdoms",
+            story_bible=bible,
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert len(bible.lore_entries) == initial_lore_count + 1
+        added = list(bible.lore_entries.values())[-1]
+        assert added.title == "The Crystal Kingdoms"
+        assert added.category == "history"
+        assert result.metadata["lore_entries_added"] == 1
+
+    @pytest.mark.asyncio
+    async def test_pipeline_routes_to_quest_agent(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "quest",
+            "sub_tasks": [],
+            "summary": "Generate quest",
+        }
+        quest_content = {
+            "name": "Dragon's Lair",
+            "description": "Slay the dragon",
+            "is_main_quest": True,
+            "objectives": [{"description": "Defeat dragon", "type": "kill", "target": "Dragon", "quantity": 1, "is_required": True}],
+            "prerequisites": [],
+            "rewards": {"xp": 100, "gold": 50, "items": [], "reputation": 10},
+        }
+        consistency_report = {"score": 0.88, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "masterful quest designer": json.dumps(quest_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Design a quest to slay the dragon",
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert "Quest" in result.stages_completed
+        assert result.content == quest_content
+        assert result.metadata["classification"] == "quest"
+
+    @pytest.mark.asyncio
+    async def test_pipeline_mixed_runs_story_and_quest(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "mixed",
+            "sub_tasks": [],
+            "summary": "Generate story and quest",
+        }
+        story_content = [{"title": "Beat 1", "description": "Opening"}]
+        quest_content = {
+            "name": "Rescue Mission",
+            "description": "Save the village",
+            "is_main_quest": False,
+            "objectives": [],
+            "prerequisites": [],
+            "rewards": {"xp": 50, "gold": 20, "items": [], "reputation": 5},
+        }
+        consistency_report = {"score": 0.92, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "masterful narrative writer": json.dumps(story_content),
+                "masterful quest designer": json.dumps(quest_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Write story beats and design a side quest",
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert "Story" in result.stages_completed
+        assert "Quest" in result.stages_completed
+        assert result.stages_completed[-1] == "Consistency"
+        assert result.metadata["classification"] == "mixed"
+
+    @pytest.mark.asyncio
     async def test_propagates_story_bible(self):
         director_plan = {"request_type": "generate", "sub_tasks": [], "summary": "Plan"}
         story_content = []
