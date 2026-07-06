@@ -142,3 +142,78 @@ async def test_full_workflow(client: AsyncClient):
     resp = await client.get("/api/projects")
     assert resp.status_code == 200
     assert resp.json() == []
+
+
+async def _create_project(client: AsyncClient) -> str:
+    resp = await client.post(
+        "/api/projects",
+        json={
+            "name": "Agent Test Game",
+            "genre": "RPG",
+            "tone": "mysterious",
+            "themes": ["magic", "intrigue"],
+        },
+    )
+    assert resp.status_code == 201
+    return resp.json()["id"]
+
+
+async def test_dialogue_generation_flow(client: AsyncClient):
+    project_id = await _create_project(client)
+
+    resp = await client.post(
+        "/api/agents/DialogueAgent",
+        json={"project_id": project_id, "request": "Write a confrontation between two rivals"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "DialogueAgent"
+    assert data["content"] is not None
+    assert "metadata" in data
+    assert "dialogue_type" in data["metadata"]
+    assert "exchange_count" in data["metadata"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_quest_generation_flow(client: AsyncClient):
+    project_id = await _create_project(client)
+
+    resp = await client.post(
+        "/api/agents/QuestAgent",
+        json={"project_id": project_id, "request": "Create a main quest to defeat the dragon"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "QuestAgent"
+    assert data["content"] is not None
+    assert "metadata" in data
+    assert "genre" in data["metadata"]
+    assert "has_objectives" in data["metadata"]
+    assert "has_rewards" in data["metadata"]
+    assert "is_main_quest" in data["metadata"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_lore_generation_flow(client: AsyncClient):
+    project_id = await _create_project(client)
+
+    resp = await client.post(
+        "/api/agents/LoreAgent",
+        json={"project_id": project_id, "request": "Describe the ancient history of the kingdom"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "LoreAgent"
+    assert data["content"] is not None
+    assert "metadata" in data
+    assert "category" in data["metadata"]
+    assert "has_title" in data["metadata"]
+    assert "has_content" in data["metadata"]
+    assert "genre" in data["metadata"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
