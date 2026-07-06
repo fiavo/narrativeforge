@@ -20,6 +20,12 @@ from NarrativeForge.Engine.models import (
     CharacterArc,
     DialogueExchange,
     DialogueLine,
+    DialogueTree,
+    DialogueNode,
+    DialogueNodeType,
+    DialogueEdge,
+    DialogueChoice,
+    DialogueCondition,
     GameGenre,
     PersonalityProfile,
     Project,
@@ -27,6 +33,11 @@ from NarrativeForge.Engine.models import (
     QuestObjective,
     QuestPrerequisite,
     QuestReward,
+    QuestGraph,
+    QuestNode,
+    QuestNodeType,
+    QuestEdge,
+    QuestCondition,
 )
 
 
@@ -222,6 +233,147 @@ class DialogueRow(Base):
         )
 
 
+class DialogueTreeRow(Base):
+    __tablename__ = "dialogue_trees"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    start_node_id = Column(String, default="")
+    data_json = Column(Text, default="{}")
+
+    def to_model(self) -> DialogueTree:
+        data = json.loads(self.data_json)
+        nodes = {
+            k: DialogueNode(
+                id=v["id"],
+                type=DialogueNodeType(v["type"]),
+                content=v.get("content", ""),
+                choices=[DialogueChoice(**c) for c in v.get("choices", [])],
+                conditions=[DialogueCondition(**c) for c in v.get("conditions", [])],
+                variables_set=v.get("variables_set", {}),
+                next_node_id=v.get("next_node_id", ""),
+            )
+            for k, v in data.get("nodes", {}).items()
+        }
+        edges = [DialogueEdge(**e) for e in data.get("edges", [])]
+        variables = data.get("variables", {})
+
+        from NarrativeForge.Engine.scripting.variables import InkVariableStore
+        var_store = InkVariableStore()
+        for name, value in variables.items():
+            var_store.set(name, value)
+
+        return DialogueTree(
+            id=self.id,
+            name=self.name,
+            start_node_id=self.start_node_id,
+            nodes=nodes,
+            edges=edges,
+            variables=var_store,
+        )
+
+    @classmethod
+    def from_model(cls, tree: DialogueTree, project_id: UUID) -> "DialogueTreeRow":
+        nodes_data = {}
+        for k, node in tree.nodes.items():
+            nodes_data[k] = {
+                "id": node.id,
+                "type": node.type.value,
+                "content": node.content,
+                "choices": [c.model_dump() for c in node.choices],
+                "conditions": [c.model_dump() for c in node.conditions],
+                "variables_set": node.variables_set,
+                "next_node_id": node.next_node_id,
+            }
+        data = {
+            "nodes": nodes_data,
+            "edges": [e.model_dump() for e in tree.edges],
+            "variables": tree.variables.to_dict(),
+        }
+        return cls(
+            id=tree.id,
+            project_id=str(project_id),
+            name=tree.name,
+            start_node_id=tree.start_node_id,
+            data_json=json.dumps(data),
+        )
+
+
+class QuestGraphRow(Base):
+    __tablename__ = "quest_graphs"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    start_node_id = Column(String, default="")
+    data_json = Column(Text, default="{}")
+
+    def to_model(self) -> QuestGraph:
+        data = json.loads(self.data_json)
+        nodes = {
+            k: QuestNode(
+                id=v["id"],
+                type=QuestNodeType(v["type"]),
+                name=v.get("name", ""),
+                description=v.get("description", ""),
+                objectives=v.get("objectives", []),
+                rewards=v.get("rewards", {}),
+                conditions=[QuestCondition(**c) for c in v.get("conditions", [])],
+                next_node_ids=v.get("next_node_ids", []),
+            )
+            for k, v in data.get("nodes", {}).items()
+        }
+        edges = [QuestEdge(**e) for e in data.get("edges", [])]
+        variables = data.get("variables", {})
+
+        from NarrativeForge.Engine.scripting.variables import InkVariableStore
+        var_store = InkVariableStore()
+        for name, value in variables.items():
+            var_store.set(name, value)
+
+        from NarrativeForge.Engine.models.quest_graph import QuestStateTracker
+        state = QuestStateTracker(data.get("state", {}))
+
+        return QuestGraph(
+            id=self.id,
+            name=self.name,
+            start_node_id=self.start_node_id,
+            nodes=nodes,
+            edges=edges,
+            variables=var_store,
+            state=state,
+        )
+
+    @classmethod
+    def from_model(cls, graph: QuestGraph, project_id: UUID) -> "QuestGraphRow":
+        nodes_data = {}
+        for k, node in graph.nodes.items():
+            nodes_data[k] = {
+                "id": node.id,
+                "type": node.type.value,
+                "name": node.name,
+                "description": node.description,
+                "objectives": node.objectives,
+                "rewards": node.rewards,
+                "conditions": [c.model_dump() for c in node.conditions],
+                "next_node_ids": node.next_node_ids,
+            }
+        data = {
+            "nodes": nodes_data,
+            "edges": [e.model_dump() for e in graph.edges],
+            "variables": graph.variables.to_dict(),
+            "state": graph.state._state,
+        }
+        return cls(
+            id=graph.id,
+            project_id=str(project_id),
+            name=graph.name,
+            start_node_id=graph.start_node_id,
+            data_json=json.dumps(data),
+        )
+
+
 class Database:
     def __init__(self, db_url: str = "sqlite+aiosqlite:///:memory:"):
         self.db_url = db_url
@@ -347,3 +499,71 @@ class Database:
                 select(DialogueRow).where(DialogueRow.project_id == str(project_id))
             )
             return [row.to_model() for row in result.scalars().all()]
+
+    async def create_dialogue_tree(self, project_id: UUID, tree: DialogueTree) -> DialogueTree:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = DialogueTreeRow.from_model(tree, project_id)
+            session.add(row)
+            await session.commit()
+            return tree
+
+    async def get_dialogue_tree(self, tree_id: str) -> DialogueTree | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(DialogueTreeRow).where(DialogueTreeRow.id == tree_id)
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_dialogue_trees(self, project_id: UUID) -> list[DialogueTree]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(DialogueTreeRow).where(DialogueTreeRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def delete_dialogue_tree(self, tree_id: str) -> bool:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                sql_delete(DialogueTreeRow).where(DialogueTreeRow.id == tree_id)
+            )
+            await session.commit()
+            return result.rowcount > 0
+
+    async def create_quest_graph(self, project_id: UUID, graph: QuestGraph) -> QuestGraph:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = QuestGraphRow.from_model(graph, project_id)
+            session.add(row)
+            await session.commit()
+            return graph
+
+    async def get_quest_graph(self, graph_id: str) -> QuestGraph | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(QuestGraphRow).where(QuestGraphRow.id == graph_id)
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_quest_graphs(self, project_id: UUID) -> list[QuestGraph]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(QuestGraphRow).where(QuestGraphRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def delete_quest_graph(self, graph_id: str) -> bool:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                sql_delete(QuestGraphRow).where(QuestGraphRow.id == graph_id)
+            )
+            await session.commit()
+            return result.rowcount > 0

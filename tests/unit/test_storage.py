@@ -7,11 +7,20 @@ from NarrativeForge.Engine.models import (
     CharacterRole,
     DialogueExchange,
     DialogueLine,
+    DialogueTree,
+    DialogueNode,
+    DialogueNodeType,
+    DialogueEdge,
+    DialogueChoice,
     GameGenre,
     Project,
     Quest,
     QuestObjective,
     QuestReward,
+    QuestGraph,
+    QuestNode,
+    QuestNodeType,
+    QuestEdge,
     StoryBible,
 )
 from NarrativeForge.Engine.storage.database import Database
@@ -210,6 +219,109 @@ class TestDatabase:
         await db.create_dialogue(project.id, d2)
         dialogues = await db.list_dialogues(project.id)
         assert len(dialogues) == 2
+
+    async def test_create_and_get_dialogue_tree(self, db, project):
+        await db.create_project(project)
+        tree = DialogueTree(
+            name="Intro Dialogue",
+            start_node_id="node1",
+            nodes={
+                "node1": DialogueNode(
+                    id="node1",
+                    type=DialogueNodeType.TEXT,
+                    content="Welcome!",
+                    next_node_id="node2",
+                ),
+                "node2": DialogueNode(
+                    id="node2",
+                    type=DialogueNodeType.CHOICE,
+                    choices=[
+                        {"text": "Yes", "next_node_id": "node3"},
+                        {"text": "No", "next_node_id": "node4"},
+                    ],
+                ),
+            },
+            edges=[
+                {"source_id": "node1", "target_id": "node2"},
+                {"source_id": "node2", "target_id": "node3"},
+            ],
+        )
+        await db.create_dialogue_tree(project.id, tree)
+        retrieved = await db.get_dialogue_tree(tree.id)
+        assert retrieved is not None
+        assert retrieved.name == "Intro Dialogue"
+        assert retrieved.start_node_id == "node1"
+        assert len(retrieved.nodes) == 2
+        assert retrieved.nodes["node1"].content == "Welcome!"
+        assert retrieved.nodes["node1"].type == DialogueNodeType.TEXT
+        assert len(retrieved.edges) == 2
+        assert retrieved.edges[0].source_id == "node1"
+
+    async def test_list_dialogue_trees(self, db, project):
+        await db.create_project(project)
+        t1 = DialogueTree(name="Tree 1", start_node_id="n1", nodes={"n1": DialogueNode(id="n1", type=DialogueNodeType.TEXT, content="Hi")})
+        t2 = DialogueTree(name="Tree 2", start_node_id="n1", nodes={"n1": DialogueNode(id="n1", type=DialogueNodeType.TEXT, content="Hey")})
+        await db.create_dialogue_tree(project.id, t1)
+        await db.create_dialogue_tree(project.id, t2)
+        trees = await db.list_dialogue_trees(project.id)
+        assert len(trees) == 2
+        names = {t.name for t in trees}
+        assert names == {"Tree 1", "Tree 2"}
+
+    async def test_delete_dialogue_tree(self, db, project):
+        await db.create_project(project)
+        tree = DialogueTree(name="ToDelete", start_node_id="n1", nodes={"n1": DialogueNode(id="n1", type=DialogueNodeType.TEXT, content="Hi")})
+        await db.create_dialogue_tree(project.id, tree)
+        result = await db.delete_dialogue_tree(tree.id)
+        assert result is True
+        retrieved = await db.get_dialogue_tree(tree.id)
+        assert retrieved is None
+
+    async def test_create_and_get_quest_graph(self, db, project):
+        await db.create_project(project)
+        graph = QuestGraph(
+            name="Main Quest Graph",
+            start_node_id="start",
+            nodes={
+                "start": QuestNode(id="start", type=QuestNodeType.START, name="Start"),
+                "obj1": QuestNode(id="obj1", type=QuestNodeType.OBJECTIVE, name="Find Item", description="Locate the artifact"),
+                "end": QuestNode(id="end", type=QuestNodeType.END, name="Complete"),
+            },
+            edges=[
+                {"source_id": "start", "target_id": "obj1"},
+                {"source_id": "obj1", "target_id": "end"},
+            ],
+        )
+        await db.create_quest_graph(project.id, graph)
+        retrieved = await db.get_quest_graph(graph.id)
+        assert retrieved is not None
+        assert retrieved.name == "Main Quest Graph"
+        assert retrieved.start_node_id == "start"
+        assert len(retrieved.nodes) == 3
+        assert retrieved.nodes["obj1"].name == "Find Item"
+        assert retrieved.nodes["obj1"].type == QuestNodeType.OBJECTIVE
+        assert len(retrieved.edges) == 2
+        assert retrieved.edges[0].source_id == "start"
+
+    async def test_list_quest_graphs(self, db, project):
+        await db.create_project(project)
+        g1 = QuestGraph(name="Graph 1", start_node_id="n1", nodes={"n1": QuestNode(id="n1", type=QuestNodeType.START)})
+        g2 = QuestGraph(name="Graph 2", start_node_id="n1", nodes={"n1": QuestNode(id="n1", type=QuestNodeType.START)})
+        await db.create_quest_graph(project.id, g1)
+        await db.create_quest_graph(project.id, g2)
+        graphs = await db.list_quest_graphs(project.id)
+        assert len(graphs) == 2
+        names = {g.name for g in graphs}
+        assert names == {"Graph 1", "Graph 2"}
+
+    async def test_delete_quest_graph(self, db, project):
+        await db.create_project(project)
+        graph = QuestGraph(name="ToDelete", start_node_id="n1", nodes={"n1": QuestNode(id="n1", type=QuestNodeType.START)})
+        await db.create_quest_graph(project.id, graph)
+        result = await db.delete_quest_graph(graph.id)
+        assert result is True
+        retrieved = await db.get_quest_graph(graph.id)
+        assert retrieved is None
 
 
 class TestJsonStore:

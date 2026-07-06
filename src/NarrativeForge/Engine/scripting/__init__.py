@@ -1,11 +1,16 @@
 from NarrativeForge.Engine.scripting.variables import InkVariableStore
 from NarrativeForge.Engine.scripting.conditions import InkConditionEvaluator
 from NarrativeForge.Engine.scripting.functions import InkFunctionRegistry
-from NarrativeForge.Engine.scripting.ink_parser import InkParser
 
 __all__ = [
     "InkVariableStore",
     "InkConditionEvaluator",
     "InkFunctionRegistry",
-    "InkParser",
 ]
+
+
+def __getattr__(name: str):
+    if name == "InkParser":
+        from NarrativeForge.Engine.scripting.ink_parser import InkParser
+        return InkParser
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
