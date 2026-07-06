@@ -23,6 +23,10 @@ class PipelineResult:
 class PipelineOrchestrator:
     def __init__(self, provider: AIProvider) -> None:
         self._provider = provider
+
+    @property
+    def provider(self) -> AIProvider:
+        return self._provider
         self._director = DirectorAgent(provider)
         self._story = StoryAgent(provider)
         self._dialogue = DialogueAgent(provider)

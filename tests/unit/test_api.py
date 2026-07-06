@@ -1,8 +1,11 @@
+from unittest.mock import AsyncMock
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from NarrativeForge.Engine.main import app
 from NarrativeForge.Engine.storage.database import Database
+from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
 from NarrativeForge.Engine.api import init_projects, init_generation
 
 
@@ -11,7 +14,11 @@ async def setup_db():
     test_db = Database("sqlite+aiosqlite:///:memory:")
     await test_db.init()
     init_projects(test_db)
-    init_generation(test_db, None)
+
+    mock_provider = AsyncMock()
+    mock_provider.complete.return_value = '{"result": "mocked"}'
+    mock_orchestrator = PipelineOrchestrator(mock_provider)
+    init_generation(test_db, mock_orchestrator)
     yield
     await test_db.close()
 
@@ -88,3 +95,35 @@ async def test_generate_project_not_found(client: AsyncClient):
         json={"project_id": "00000000-0000-0000-0000-000000000000", "request": "test"},
     )
     assert resp.status_code == 404
+
+
+async def test_direct_agent_invocation(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "Agent Test", "genre": "Fantasy"}
+    )
+    project_id = create_resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/agents/StoryAgent",
+        json={"project_id": project_id, "request": "Generate story beats"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "StoryAgent"
+    assert "content" in data
+    assert "metadata" in data
+    assert data["metadata"]["genre"] == "Fantasy"
+
+
+async def test_direct_agent_invalid_name(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "Agent Test", "genre": "Fantasy"}
+    )
+    project_id = create_resp.json()["id"]
+
+    resp = await client.post(
+        "/api/agents/InvalidAgent",
+        json={"project_id": project_id, "request": "test"},
+    )
+    assert resp.status_code == 400
+    assert "Unknown agent" in resp.json()["detail"]
