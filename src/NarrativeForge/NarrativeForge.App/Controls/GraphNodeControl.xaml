@@ -1,0 +1,89 @@
+<UserControl x:Class="NarrativeForge.App.Controls.GraphNodeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:NarrativeForge.App.ViewModels"
+             Width="200" MinHeight="120"
+             x:Name="Root">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="NodeGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Input Port (top center) -->
+        <Ellipse Grid.Row="0" Width="12" Height="12"
+                 HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-6,0,0"
+                 Fill="{DynamicResource Surface2}" Stroke="{DynamicResource Subtext1}" StrokeThickness="1.5"
+                 x:Name="InputPort"
+                 Tag="Input"/>
+
+        <!-- Selection Border -->
+        <Border Grid.Row="1" BorderThickness="2" CornerRadius="8"
+                BorderBrush="Transparent" Background="{DynamicResource Surface1}"
+                x:Name="SelectionBorder">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected, ElementName=Root}" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource Mauve}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="36"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header Bar (colored by node type) -->
+                <Border Grid.Row="0" CornerRadius="6,6,0,0" Padding="10,0">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding HeaderColor, ElementName=Root}"/>
+                    </Border.Background>
+                    <DockPanel>
+                        <TextBlock Text="{Binding NodeType, ElementName=Root}"
+                                   FontSize="9" FontWeight="Bold" VerticalAlignment="Center"
+                                   Opacity="0.85"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- Content Area -->
+                <Grid Grid.Row="1" Margin="10,8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding Title, ElementName=Root}"
+                               FontWeight="SemiBold" FontSize="13"
+                               Foreground="{DynamicResource Text}"
+                               TextTrimming="CharacterEllipsis"
+                               Margin="0,0,0,4"/>
+
+                    <TextBlock Grid.Row="1"
+                               Text="{Binding Content, ElementName=Root}"
+                               FontSize="11" Foreground="{DynamicResource Subtext0}"
+                               TextWrapping="Wrap" TextTrimming="WordEllipsis"
+                               MaxHeight="60"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Output Port (bottom center) -->
+        <Ellipse Grid.Row="2" Width="12" Height="12"
+                 HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,-6"
+                 Fill="{DynamicResource Surface2}" Stroke="{DynamicResource Subtext1}" StrokeThickness="1.5"
+                 x:Name="OutputPort"
+                 Tag="Output"/>
+    </Grid>
+</UserControl>
