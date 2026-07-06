@@ -2,7 +2,6 @@ import json
 
 from NarrativeForge.Engine.ai_providers.base import CompletionOptions, Message
 from NarrativeForge.Engine.models.project import GameGenre
-from NarrativeForge.Engine.models.quest import Quest
 
 from .base import AgentContext, AgentResult, BaseAgent
 

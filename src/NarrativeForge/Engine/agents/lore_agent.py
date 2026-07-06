@@ -2,7 +2,6 @@ import json
 from typing import Any
 
 from NarrativeForge.Engine.ai_providers.base import CompletionOptions, Message
-from NarrativeForge.Engine.models.project import GameGenre
 from NarrativeForge.Engine.models.story_bible import StoryBible
 
 from .base import AgentContext, AgentResult, BaseAgent
