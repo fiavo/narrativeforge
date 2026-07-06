@@ -94,6 +94,21 @@ SYSTEM_PROMPT_BASE = (
 )
 
 
+NODE_GENERATION_PROMPT_BASE = (
+    "You are generating the next dialogue node in an iterative dialogue generation process.\n"
+    "Each node represents a single exchange or beat in a dialogue.\n\n"
+    "Always return your response as valid JSON with the following structure:\n"
+    '{\n'
+    '  "speaker": "<character name>",\n'
+    '  "line": "<dialogue line>",\n'
+    '  "emotion": "<optional emotion>",\n'
+    '  "action": "<optional stage direction>",\n'
+    '  "node_type": "dialogue"\n'
+    '}\n\n'
+    "Do not include any text outside the JSON."
+)
+
+
 class DialogueAgent(BaseAgent):
     def __init__(self, provider: Any) -> None:
         super().__init__(provider)
@@ -149,6 +164,66 @@ class DialogueAgent(BaseAgent):
                 "format": format_param,
             },
         )
+
+    async def generate_next_node(self, context: AgentContext) -> AgentResult:
+        genre = context.project.genre
+        tone_hint = GENRE_TONE_HINTS.get(genre, "Adapt the tone to fit the genre.")
+
+        system_prompt = NODE_GENERATION_PROMPT_BASE + f"\n\nGenre: {genre.value}\nTone guidance: {tone_hint}"
+
+        if context.story_bible:
+            system_prompt += "\n" + self._summarize_characters(context.story_bible)
+
+        user_parts = [f"Generate the next dialogue node for: {context.user_request}"]
+
+        if context.previous_results:
+            previous_nodes = context.previous_results.get("generated_nodes", [])
+            if previous_nodes:
+                user_parts.append(f"Previous dialogue nodes: {json.dumps(previous_nodes)}")
+
+        user_prompt = "\n".join(user_parts)
+
+        messages = [
+            Message.system(system_prompt),
+            Message.user(user_prompt),
+        ]
+
+        options = context.generation_params or CompletionOptions(
+            temperature=0.75, max_tokens=1024
+        )
+
+        raw_response = await self._provider.complete(messages, options)
+        node = self._parse_node_response(raw_response)
+
+        return AgentResult(
+            agent_name=self.name,
+            content=node,
+            metadata={
+                "node_type": "dialogue",
+                "speaker": node.get("speaker", ""),
+                "dialogue_type": context.previous_results.get("dialogue_type", "conversation"),
+            },
+        )
+
+    def _parse_node_response(self, raw: str) -> dict[str, Any]:
+        try:
+            parsed = json.loads(raw)
+            return {
+                "speaker": parsed.get("speaker", "Unknown"),
+                "line": parsed.get("line", ""),
+                "emotion": parsed.get("emotion", ""),
+                "action": parsed.get("action", ""),
+                "node_type": "dialogue",
+            }
+        except (json.JSONDecodeError, TypeError):
+            return {
+                "speaker": "Unknown",
+                "line": raw if isinstance(raw, str) else "",
+                "emotion": "",
+                "action": "",
+                "node_type": "dialogue",
+                "error": "Failed to parse node response",
+            }
 
     def _build_user_prompt(self, context: AgentContext, format_param: str) -> str:
         prompt_parts = [f"User request: {context.user_request}"]

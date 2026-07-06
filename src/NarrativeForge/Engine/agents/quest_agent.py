@@ -1,9 +1,30 @@
 import json
+from typing import Any
 
 from NarrativeForge.Engine.ai_providers.base import CompletionOptions, Message
 from NarrativeForge.Engine.models.project import GameGenre
 
 from .base import AgentContext, AgentResult, BaseAgent
+
+QUEST_NODE_PROMPT_BASE = (
+    "You are generating the next quest node in an iterative quest generation process.\n"
+    "Each node represents a single step, objective, or event in a quest.\n\n"
+    "Always return your response as valid JSON with the following structure:\n"
+    '{\n'
+    '  "title": "<node title>",\n'
+    '  "description": "<node description>",\n'
+    '  "node_type": "quest_step",\n'
+    '  "objective": {\n'
+    '    "description": "<what needs to be done>",\n'
+    '    "type": "kill|collect|explore|escort|talk|solve",\n'
+    '    "target": "<target name>",\n'
+    '    "quantity": 1,\n'
+    '    "is_required": true\n'
+    '  },\n'
+    '  "completion_hint": "<hint for player>"\n'
+    '}\n\n'
+    "Do not include any text outside the JSON."
+)
 
 GENRE_QUEST_HINTS: dict[GameGenre, str] = {
     GameGenre.Horror: "Survival, escape, investigation of dark mysteries.",
@@ -100,6 +121,69 @@ class QuestAgent(BaseAgent):
                 "is_main_quest": content.get("is_main_quest", False),
             },
         )
+
+    async def generate_next_node(self, context: AgentContext) -> AgentResult:
+        genre = context.project.genre
+        quest_hint = GENRE_QUEST_HINTS.get(genre, "Adapt quest design to fit the genre.")
+
+        system_prompt = (
+            QUEST_NODE_PROMPT_BASE
+            + f"\n\nGenre: {genre.value}\nGenre quest conventions: {quest_hint}"
+        )
+
+        if context.story_bible:
+            system_prompt += "\n" + self._summarize_story_bible(context)
+
+        user_parts = [f"Generate the next quest node for: {context.user_request}"]
+
+        if context.previous_results:
+            previous_nodes = context.previous_results.get("generated_nodes", [])
+            if previous_nodes:
+                user_parts.append(f"Previous quest nodes: {json.dumps(previous_nodes)}")
+
+        user_prompt = "\n".join(user_parts)
+
+        messages = [
+            Message.system(system_prompt),
+            Message.user(user_prompt),
+        ]
+
+        options = context.generation_params or CompletionOptions(
+            temperature=0.6, max_tokens=1024
+        )
+
+        raw_response = await self._provider.complete(messages, options)
+        node = self._parse_node_response(raw_response)
+
+        return AgentResult(
+            agent_name=self.name,
+            content=node,
+            metadata={
+                "node_type": "quest_step",
+                "genre": context.project.genre.value,
+                "has_objective": bool(node.get("objective")),
+            },
+        )
+
+    def _parse_node_response(self, raw: str) -> dict[str, Any]:
+        try:
+            data = json.loads(raw)
+            return {
+                "title": data.get("title", "Unnamed Step"),
+                "description": data.get("description", ""),
+                "node_type": "quest_step",
+                "objective": data.get("objective", {}),
+                "completion_hint": data.get("completion_hint", ""),
+            }
+        except (json.JSONDecodeError, TypeError):
+            return {
+                "title": "Unnamed Step",
+                "description": raw if isinstance(raw, str) else "",
+                "node_type": "quest_step",
+                "objective": {},
+                "completion_hint": "",
+                "error": "Failed to parse node response",
+            }
 
     def _parse_response(self, raw: str) -> dict:
         try:
