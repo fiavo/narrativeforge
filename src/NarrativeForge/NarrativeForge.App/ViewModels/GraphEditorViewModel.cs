@@ -1,12 +1,14 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NarrativeForge.App.Services;
 using NarrativeForge.Core.DTOs;
 
 namespace NarrativeForge.App.ViewModels;
 
 public partial class GraphEditorViewModel : ObservableObject
 {
+    private readonly UndoRedoManager _undoRedo = new();
     [ObservableProperty]
     private string _graphName = string.Empty;
 
@@ -26,6 +28,29 @@ public partial class GraphEditorViewModel : ObservableObject
 
     public ObservableCollection<GraphEdgeViewModel> Edges { get; } = [];
 
+    [RelayCommand(CanExecute = nameof(CanUndo))]
+    private void Undo()
+    {
+        _undoRedo.Undo();
+        NotifyUndoRedoStateChanged();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRedo))]
+    private void Redo()
+    {
+        _undoRedo.Redo();
+        NotifyUndoRedoStateChanged();
+    }
+
+    public bool CanUndo => _undoRedo.CanUndo;
+    public bool CanRedo => _undoRedo.CanRedo;
+
+    public void MoveNode(GraphNodeViewModel node, double oldX, double oldY, double newX, double newY)
+    {
+        _undoRedo.Execute(new MoveNodeAction(this, node, oldX, oldY, newX, newY));
+        NotifyUndoRedoStateChanged();
+    }
+
     [RelayCommand]
     private void AddNode(string nodeType = "dialogue")
     {
@@ -36,9 +61,8 @@ public partial class GraphEditorViewModel : ObservableObject
             X = 100 + Nodes.Count * 50,
             Y = 100 + Nodes.Count * 50
         };
-        Nodes.Add(node);
-        SelectedNode = node;
-        IsDirty = true;
+        _undoRedo.Execute(new AddNodeAction(this, node));
+        NotifyUndoRedoStateChanged();
     }
 
     [RelayCommand]
@@ -46,17 +70,8 @@ public partial class GraphEditorViewModel : ObservableObject
     {
         var node = Nodes.FirstOrDefault(n => n.Id == nodeId);
         if (node is null) return;
-
-        var connectedEdges = Edges.Where(e => e.SourceId == nodeId || e.TargetId == nodeId).ToList();
-        foreach (var edge in connectedEdges)
-            Edges.Remove(edge);
-
-        Nodes.Remove(node);
-
-        if (SelectedNode?.Id == nodeId)
-            SelectedNode = null;
-
-        IsDirty = true;
+        _undoRedo.Execute(new DeleteNodeAction(this, node));
+        NotifyUndoRedoStateChanged();
     }
 
     public void ConnectNodes(Guid sourceId, Guid targetId, string condition = "")
@@ -70,8 +85,8 @@ public partial class GraphEditorViewModel : ObservableObject
             TargetId = targetId,
             Condition = condition
         };
-        Edges.Add(edge);
-        IsDirty = true;
+        _undoRedo.Execute(new ConnectEdgeAction(this, edge));
+        NotifyUndoRedoStateChanged();
     }
 
     [RelayCommand]
@@ -79,18 +94,14 @@ public partial class GraphEditorViewModel : ObservableObject
     {
         var edge = Edges.FirstOrDefault(e => e.Id == edgeId);
         if (edge is null) return;
-
-        Edges.Remove(edge);
-
-        if (SelectedEdge?.Id == edgeId)
-            SelectedEdge = null;
-
-        IsDirty = true;
+        _undoRedo.Execute(new DeleteEdgeAction(this, edge));
+        NotifyUndoRedoStateChanged();
     }
 
     [RelayCommand]
     private void ClearGraph()
     {
+        _undoRedo.Clear();
         Nodes.Clear();
         Edges.Clear();
         SelectedNode = null;
@@ -98,6 +109,13 @@ public partial class GraphEditorViewModel : ObservableObject
         GraphName = string.Empty;
         StartNodeId = Guid.Empty;
         IsDirty = false;
+        NotifyUndoRedoStateChanged();
+    }
+
+    private void NotifyUndoRedoStateChanged()
+    {
+        UndoCommand.NotifyCanExecuteChanged();
+        RedoCommand.NotifyCanExecuteChanged();
     }
 
     public DialogueTreeDto ToDialogueTreeDto()
@@ -183,6 +201,7 @@ public partial class GraphEditorViewModel : ObservableObject
     public void LoadFromDialogueTree(DialogueTreeDto dto)
     {
         ClearGraph();
+        _undoRedo.Clear();
         GraphName = dto.Name;
         StartNodeId = dto.StartNodeId;
 
@@ -205,6 +224,7 @@ public partial class GraphEditorViewModel : ObservableObject
     public void LoadFromQuestGraph(QuestGraphDto dto)
     {
         ClearGraph();
+        _undoRedo.Clear();
         GraphName = dto.Name;
         StartNodeId = dto.StartNodeId;
 
