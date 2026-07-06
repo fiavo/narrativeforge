@@ -11,3 +11,10 @@ build/
 .venv/
 venv/
 env/
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/

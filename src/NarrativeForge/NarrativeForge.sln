@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NarrativeForge.Core", "Narr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NarrativeForge.App", "NarrativeForge.App\NarrativeForge.App.csproj", "{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NarrativeForge.Tests", "NarrativeForge.Tests\NarrativeForge.Tests.csproj", "{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|x64.Build.0 = Release|Any CPU
 		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|x86.ActiveCfg = Release|Any CPU
 		{69FACC1F-DE3A-4CF6-BEED-4EAF75DD4084}.Release|x86.Build.0 = Release|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Debug|x64.Build.0 = Debug|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Debug|x86.Build.0 = Debug|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Release|x64.ActiveCfg = Release|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Release|x64.Build.0 = Release|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Release|x86.ActiveCfg = Release|Any CPU
+		{4FB38A7A-AF1B-43C1-9898-9E397E8F8EE3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
