@@ -43,6 +43,9 @@
                     <MenuItem Header="_Last Used (Ctrl+L)" Command="{Binding GraphEditorViewModel.LayoutLastUsedCommand}" Foreground="{DynamicResource Text}"/>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="_Story Bible" Foreground="{DynamicResource Text}">
+                <MenuItem Header="_Open Story Bible" Command="{Binding OpenStoryBibleCommand}" Foreground="{DynamicResource Text}"/>
+            </MenuItem>
             <MenuItem Header="_View" Foreground="{DynamicResource Text}">
                 <MenuItem Header="_Connect to Backend" Command="{Binding ConnectCommand}" Foreground="{DynamicResource Text}"/>
             </MenuItem>
@@ -250,6 +253,54 @@
                         <!-- Property Panel -->
                         <Border Grid.Column="4" Background="{DynamicResource Surface1}" BorderBrush="{DynamicResource Surface2}" BorderThickness="1,0,0,0">
                             <controls:PropertyPanel SelectedNode="{Binding GraphEditorViewModel.SelectedNode, Mode=TwoWay}"/>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <!-- Story Bible Tab -->
+                <TabItem Header="Story Bible">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="280"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left Panel: Entity List -->
+                        <Border Grid.Column="0" Background="{DynamicResource Surface1}" BorderBrush="{DynamicResource Surface2}" BorderThickness="0,0,1,0">
+                            <controls:EntityListControl/>
+                        </Border>
+
+                        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                                      Background="{DynamicResource Surface2}"/>
+
+                        <!-- Center: Editor Controls -->
+                        <TabControl Grid.Column="2" Background="Transparent" Foreground="{DynamicResource Text}">
+                            <TabItem Header="Character">
+                                <controls:CharacterEditorControl/>
+                            </TabItem>
+                            <TabItem Header="Location">
+                                <controls:LocationEditorControl/>
+                            </TabItem>
+                            <TabItem Header="Faction">
+                                <controls:FactionEditorControl/>
+                            </TabItem>
+                            <TabItem Header="Timeline">
+                                <controls:TimelineEditorControl/>
+                            </TabItem>
+                            <TabItem Header="Lore">
+                                <controls:LoreEditorControl/>
+                            </TabItem>
+                        </TabControl>
+
+                        <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                                      Background="{DynamicResource Surface2}"/>
+
+                        <!-- Right Panel: Relationships -->
+                        <Border Grid.Column="4" Background="{DynamicResource Surface1}" BorderBrush="{DynamicResource Surface2}" BorderThickness="1,0,0,0">
+                            <controls:RelationshipPanel/>
                         </Border>
                     </Grid>
                 </TabItem>

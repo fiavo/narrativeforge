@@ -34,7 +34,12 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _showGraphEditor;
 
+    [ObservableProperty]
+    private bool _showStoryBible;
+
     public GraphEditorViewModel GraphEditorViewModel { get; } = new();
+
+    public StoryBibleManagerViewModel StoryBibleManagerViewModel { get; } = new();
 
     public ObservableCollection<ProjectDto> Projects { get; } = [];
 
@@ -199,6 +204,17 @@ public partial class MainViewModel : ObservableObject
         GraphEditorViewModel.GraphName = "New Quest Graph";
         ShowGraphEditor = true;
         StatusText = "Quest graph editor opened.";
+    }
+
+    [RelayCommand]
+    private void OpenStoryBible()
+    {
+        if (SelectedProject is not null)
+        {
+            StoryBibleManagerViewModel.ProjectId = SelectedProject.Id;
+        }
+        ShowStoryBible = true;
+        StatusText = "Story Bible Manager opened.";
     }
 
 }
