@@ -1,0 +1,87 @@
+<UserControl x:Class="NarrativeForge.App.Controls.LoreEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource Surface1}">
+
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="LORE EDITOR" FontSize="11" FontWeight="Bold"
+                   Foreground="{DynamicResource Subtext1}" Margin="12,10,12,6"/>
+
+        <TextBlock x:Name="EmptyState" DockPanel.Dock="Top" Text="Select a lore entry to edit"
+                   FontSize="11" Foreground="{DynamicResource Overlay1}" Margin="12,4,12,0"
+                   Visibility="Visible"/>
+
+        <ScrollViewer x:Name="EditorScrollViewer" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12"
+                      Visibility="Collapsed">
+            <StackPanel x:Name="EditorPanel" Margin="0">
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,4,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Title" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TitleTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Content" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="ContentTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="100"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Category" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <ComboBox x:Name="CategoryComboBox"
+                                  Foreground="{DynamicResource Text}"
+                                  Background="{DynamicResource Surface1}"
+                                  SelectionChanged="CategoryComboBox_SelectionChanged">
+                            <ComboBoxItem Content="History"/>
+                            <ComboBoxItem Content="Mythology"/>
+                            <ComboBoxItem Content="Religion"/>
+                            <ComboBoxItem Content="Geography"/>
+                            <ComboBoxItem Content="Culture"/>
+                            <ComboBoxItem Content="Technology"/>
+                            <ComboBoxItem Content="Magic"/>
+                            <ComboBoxItem Content="Politics"/>
+                            <ComboBoxItem Content="Economics"/>
+                            <ComboBoxItem Content="Other"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Source" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="SourceTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"
+                                 ToolTip="Source or origin of this lore entry"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Related Entries" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="RelatedEntriesTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One related entity ID per line"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

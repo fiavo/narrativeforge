@@ -1,0 +1,120 @@
+<UserControl x:Class="NarrativeForge.App.Controls.TimelineEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource Surface1}">
+
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="TIMELINE EDITOR" FontSize="11" FontWeight="Bold"
+                   Foreground="{DynamicResource Subtext1}" Margin="12,10,12,6"/>
+
+        <TextBlock x:Name="EmptyState" DockPanel.Dock="Top" Text="Select a timeline event to edit"
+                   FontSize="11" Foreground="{DynamicResource Overlay1}" Margin="12,4,12,0"
+                   Visibility="Visible"/>
+
+        <ScrollViewer x:Name="EditorScrollViewer" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12"
+                      Visibility="Collapsed">
+            <StackPanel x:Name="EditorPanel" Margin="0">
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,4,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Title" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TitleTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Description" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="DescriptionTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Timestamp" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="DateTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"
+                                 ToolTip="Date or time period of this event"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Type" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <ComboBox x:Name="TypeComboBox"
+                                  Foreground="{DynamicResource Text}"
+                                  Background="{DynamicResource Surface1}"
+                                  SelectionChanged="TypeComboBox_SelectionChanged">
+                            <ComboBoxItem Content="Battle"/>
+                            <ComboBoxItem Content="Treaty"/>
+                            <ComboBoxItem Content="Discovery"/>
+                            <ComboBoxItem Content="Betrayal"/>
+                            <ComboBoxItem Content="Coronation"/>
+                            <ComboBoxItem Content="Migration"/>
+                            <ComboBoxItem Content="Disaster"/>
+                            <ComboBoxItem Content="Festival"/>
+                            <ComboBoxItem Content="Other"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Participants" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="ParticipantsTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One participant ID per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Location ID" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="LocationTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"
+                                 ToolTip="Guid of the location where this event takes place"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Consequences" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="ConsequencesTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One consequence per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Order" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="OrderTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"
+                                 ToolTip="Sort order for this event in the timeline"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
