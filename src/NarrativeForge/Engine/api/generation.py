@@ -17,6 +17,7 @@ from NarrativeForge.Engine.agents import (
     RewriteAgent,
 )
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
+from NarrativeForge.Engine.plugins.plugin_manager import PluginManager
 from NarrativeForge.Engine.storage.database import Database
 
 EXPORT_FORMATS = ["json", "markdown", "text", "yaml"]
@@ -37,12 +38,14 @@ router = APIRouter(prefix="/api", tags=["generation"])
 
 _db: Database | None = None
 _orchestrator: PipelineOrchestrator | None = None
+_plugin_manager: PluginManager | None = None
 
 
-def init(db: Database, orchestrator: PipelineOrchestrator):
-    global _db, _orchestrator
+def init(db: Database, orchestrator: PipelineOrchestrator, plugin_manager: PluginManager | None = None):
+    global _db, _orchestrator, _plugin_manager
     _db = db
     _orchestrator = orchestrator
+    _plugin_manager = plugin_manager or PluginManager()
 
 
 class GenerateRequest(BaseModel):
@@ -142,6 +145,22 @@ async def export_content(body: ExportRequest):
         format=body.format,
         content=export_content,
     )
+
+
+@router.get("/plugins")
+async def list_plugins():
+    plugins = _plugin_manager.discover()
+    return [
+        {
+            "name": p.name,
+            "version": p.version,
+            "description": p.description,
+            "author": p.author,
+            "type": p.plugin_type.value,
+            "enabled": p.enabled,
+        }
+        for p in plugins
+    ]
 
 
 class AgentRequest(BaseModel):

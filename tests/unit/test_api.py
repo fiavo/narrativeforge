@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -6,6 +6,7 @@ from httpx import ASGITransport, AsyncClient
 from NarrativeForge.Engine.main import app
 from NarrativeForge.Engine.storage.database import Database
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
+from NarrativeForge.Engine.plugins.plugin_info import PluginInfo, PluginType
 from NarrativeForge.Engine.api import init_projects, init_generation, init_dialogues, init_quests
 
 
@@ -20,7 +21,19 @@ async def setup_db():
     mock_provider = AsyncMock()
     mock_provider.complete.return_value = '{"result": "mocked"}'
     mock_orchestrator = PipelineOrchestrator(mock_provider)
-    init_generation(test_db, mock_orchestrator)
+
+    mock_plugin_manager = MagicMock()
+    mock_plugin_manager.discover.return_value = [
+        PluginInfo(
+            name="test-plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+            plugin_type=PluginType.AGENT,
+            enabled=True,
+        ),
+    ]
+    init_generation(test_db, mock_orchestrator, mock_plugin_manager)
     yield
     await test_db.close()
 
@@ -275,3 +288,17 @@ async def test_export_invalid_format(client: AsyncClient):
     resp = await client.post("/api/export", json=payload)
     assert resp.status_code == 400
     assert "Unknown format" in resp.json()["detail"]
+
+
+async def test_list_plugins(client: AsyncClient):
+    resp = await client.get("/api/plugins")
+    assert resp.status_code == 200
+    plugins = resp.json()
+    assert len(plugins) == 1
+    plugin = plugins[0]
+    assert plugin["name"] == "test-plugin"
+    assert plugin["version"] == "1.0.0"
+    assert plugin["description"] == "A test plugin"
+    assert plugin["author"] == "Test Author"
+    assert plugin["type"] == "agent"
+    assert plugin["enabled"] is True

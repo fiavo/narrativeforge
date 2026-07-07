@@ -7,6 +7,7 @@ from NarrativeForge.Engine.config import config
 from NarrativeForge.Engine.storage.database import Database
 from NarrativeForge.Engine.ai_providers import OpenAICompatibleProvider
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
+from NarrativeForge.Engine.plugins.plugin_manager import PluginManager
 from NarrativeForge.Engine.api import (
     projects_router,
     generation_router,
@@ -21,13 +22,14 @@ from NarrativeForge.Engine.api import (
 db = Database(config.database_url)
 provider = OpenAICompatibleProvider(base_url="http://127.0.0.1:11434", model=config.default_model)
 orchestrator = PipelineOrchestrator(provider)
+plugin_manager = PluginManager()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await db.init()
     init_projects(db)
-    init_generation(db, orchestrator)
+    init_generation(db, orchestrator, plugin_manager)
     init_dialogues(db)
     init_quests(db)
     yield
