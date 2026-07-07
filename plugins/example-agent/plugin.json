@@ -1,0 +1,10 @@
+{
+  "name": "example-agent",
+  "version": "1.0.0",
+  "description": "Example agent plugin demonstrating the NarrativeForge plugin pattern",
+  "author": "NarrativeForge Team",
+  "plugin_type": "agent",
+  "entry_point": "example_agent:ExampleAgent",
+  "dependencies": [],
+  "min_version": "0.1.0"
+}
