@@ -35,3 +35,17 @@ public class CharacterArcDto
     public string EndState { get; set; } = string.Empty;
     public List<string> TurningPoints { get; set; } = [];
 }
+
+public class CreateCharacterRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Alias { get; set; } = string.Empty;
+    public CharacterRole Role { get; set; } = CharacterRole.Supporting;
+    public PersonalityDto Personality { get; set; } = new();
+    public string Backstory { get; set; } = string.Empty;
+    public string Motivation { get; set; } = string.Empty;
+    public List<string> Goals { get; set; } = [];
+    public List<string> Fears { get; set; } = [];
+    public string DialogueStyle { get; set; } = string.Empty;
+    public string Appearance { get; set; } = string.Empty;
+}

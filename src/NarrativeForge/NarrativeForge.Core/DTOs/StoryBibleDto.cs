@@ -75,3 +75,35 @@ public class StoryBibleDto
     public string MagicSystem { get; set; } = string.Empty;
     public string TechnologyLevel { get; set; } = string.Empty;
 }
+
+public class CreateLocationRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Significance { get; set; } = string.Empty;
+}
+
+public class CreateFactionRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public List<string> Goals { get; set; } = [];
+}
+
+public class CreateTimelineEventRequest
+{
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Timestamp { get; set; } = string.Empty;
+    public int Order { get; set; }
+    public List<string> Consequences { get; set; } = [];
+}
+
+public class CreateLoreEntryRequest
+{
+    public string Title { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public List<string> Tags { get; set; } = [];
+}
