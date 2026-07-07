@@ -1,0 +1,253 @@
+<UserControl x:Class="NarrativeForge.App.Controls.EntityListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:NarrativeForge.App.ViewModels"
+             Background="{DynamicResource Surface1}">
+
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="ENTITIES" FontSize="11" FontWeight="Bold"
+                   Foreground="{DynamicResource Subtext1}" Margin="12,10,12,6"/>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,0,12">
+
+            <StackPanel>
+
+                <!-- Characters -->
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,4,12,8">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock Text="Characters" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Subtext1}" VerticalAlignment="Center"/>
+                            <Button Content="+" HorizontalAlignment="Right" Padding="6,2"
+                                    Background="{DynamicResource Surface2}" Foreground="{DynamicResource Text}"
+                                    Click="AddCharacter_Click" FontSize="14" FontWeight="Bold"/>
+                        </DockPanel>
+                        <ListBox x:Name="CharactersList"
+                                 Background="Transparent" BorderThickness="0"
+                                 Foreground="{DynamicResource Text}"
+                                 SelectionChanged="CharactersList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" FontSize="12"
+                                               Foreground="{DynamicResource Text}"
+                                               Margin="4,2"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Padding" Value="8,4"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                        CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{DynamicResource Surface2}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- Locations -->
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock Text="Locations" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Subtext1}" VerticalAlignment="Center"/>
+                            <Button Content="+" HorizontalAlignment="Right" Padding="6,2"
+                                    Background="{DynamicResource Surface2}" Foreground="{DynamicResource Text}"
+                                    Click="AddLocation_Click" FontSize="14" FontWeight="Bold"/>
+                        </DockPanel>
+                        <ListBox x:Name="LocationsList"
+                                 Background="Transparent" BorderThickness="0"
+                                 Foreground="{DynamicResource Text}"
+                                 SelectionChanged="LocationsList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" FontSize="12"
+                                               Foreground="{DynamicResource Text}"
+                                               Margin="4,2"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Padding" Value="8,4"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                        CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{DynamicResource Surface2}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- Factions -->
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock Text="Factions" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Subtext1}" VerticalAlignment="Center"/>
+                            <Button Content="+" HorizontalAlignment="Right" Padding="6,2"
+                                    Background="{DynamicResource Surface2}" Foreground="{DynamicResource Text}"
+                                    Click="AddFaction_Click" FontSize="14" FontWeight="Bold"/>
+                        </DockPanel>
+                        <ListBox x:Name="FactionsList"
+                                 Background="Transparent" BorderThickness="0"
+                                 Foreground="{DynamicResource Text}"
+                                 SelectionChanged="FactionsList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" FontSize="12"
+                                               Foreground="{DynamicResource Text}"
+                                               Margin="4,2"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Padding" Value="8,4"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                        CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{DynamicResource Surface2}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- Timeline -->
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock Text="Timeline" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Subtext1}" VerticalAlignment="Center"/>
+                            <Button Content="+" HorizontalAlignment="Right" Padding="6,2"
+                                    Background="{DynamicResource Surface2}" Foreground="{DynamicResource Text}"
+                                    Click="AddTimelineEvent_Click" FontSize="14" FontWeight="Bold"/>
+                        </DockPanel>
+                        <ListBox x:Name="TimelineList"
+                                 Background="Transparent" BorderThickness="0"
+                                 Foreground="{DynamicResource Text}"
+                                 SelectionChanged="TimelineList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" FontSize="12"
+                                               Foreground="{DynamicResource Text}"
+                                               Margin="4,2"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Padding" Value="8,4"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                        CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{DynamicResource Surface2}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- Lore -->
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock Text="Lore" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Subtext1}" VerticalAlignment="Center"/>
+                            <Button Content="+" HorizontalAlignment="Right" Padding="6,2"
+                                    Background="{DynamicResource Surface2}" Foreground="{DynamicResource Text}"
+                                    Click="AddLoreEntry_Click" FontSize="14" FontWeight="Bold"/>
+                        </DockPanel>
+                        <ListBox x:Name="LoreList"
+                                 Background="Transparent" BorderThickness="0"
+                                 Foreground="{DynamicResource Text}"
+                                 SelectionChanged="LoreList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Title}" FontSize="12"
+                                               Foreground="{DynamicResource Text}"
+                                               Margin="4,2"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Padding" Value="8,4"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                        CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{DynamicResource Surface2}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
