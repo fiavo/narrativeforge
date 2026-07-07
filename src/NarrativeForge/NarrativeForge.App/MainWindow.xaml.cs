@@ -13,4 +13,9 @@ public partial class MainWindow : Window
     {
         Application.Current.Shutdown();
     }
+
+    private void ViewHistory_Click(object sender, RoutedEventArgs e)
+    {
+        HistoryTab.IsSelected = true;
+    }
 }

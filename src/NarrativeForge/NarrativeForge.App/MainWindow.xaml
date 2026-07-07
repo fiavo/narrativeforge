@@ -46,6 +46,11 @@
             <MenuItem Header="_Story Bible" Foreground="{DynamicResource Text}">
                 <MenuItem Header="_Open Story Bible" Command="{Binding OpenStoryBibleCommand}" Foreground="{DynamicResource Text}"/>
             </MenuItem>
+            <MenuItem Header="_Version" Foreground="{DynamicResource Text}">
+                <MenuItem Header="Create _Snapshot" Command="{Binding HistoryViewModel.CreateSnapshotCommand}" Foreground="{DynamicResource Text}"/>
+                <Separator/>
+                <MenuItem Header="View _History" Click="ViewHistory_Click" Foreground="{DynamicResource Text}"/>
+            </MenuItem>
             <MenuItem Header="_View" Foreground="{DynamicResource Text}">
                 <MenuItem Header="_Connect to Backend" Command="{Binding ConnectCommand}" Foreground="{DynamicResource Text}"/>
             </MenuItem>
@@ -302,6 +307,26 @@
                         <Border Grid.Column="4" Background="{DynamicResource Surface1}" BorderBrush="{DynamicResource Surface2}" BorderThickness="1,0,0,0">
                             <controls:RelationshipPanel/>
                         </Border>
+                    </Grid>
+                </TabItem>
+
+                <!-- Version History Tab -->
+                <TabItem x:Name="HistoryTab" Header="History">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="260"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- History Panel -->
+                        <controls:HistoryPanel Grid.Column="0" x:Name="HistoryPanelControl"/>
+
+                        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                                      Background="{DynamicResource Surface2}"/>
+
+                        <!-- Diff Viewer -->
+                        <controls:DiffViewer Grid.Column="2" x:Name="DiffViewerControl"/>
                     </Grid>
                 </TabItem>
             </TabControl>

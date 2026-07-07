@@ -41,6 +41,8 @@ public partial class MainViewModel : ObservableObject
 
     public StoryBibleManagerViewModel StoryBibleManagerViewModel { get; } = new();
 
+    public HistoryViewModel HistoryViewModel { get; } = new();
+
     public ObservableCollection<ProjectDto> Projects { get; } = [];
 
     public MainViewModel()
