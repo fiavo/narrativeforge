@@ -5,12 +5,13 @@ from httpx import ASGITransport, AsyncClient
 
 from NarrativeForge.Engine.main import app
 from NarrativeForge.Engine.storage.database import Database
-from NarrativeForge.Engine.api import init_projects, init_generation, init_dialogues, init_quests
+from NarrativeForge.Engine.api import init_projects, init_generation, init_dialogues, init_quests, init_versions
 from NarrativeForge.Engine.ai_providers.base import AIProvider, CompletionOptions, Message
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
 from NarrativeForge.Engine.plugins.plugin_manager import PluginManager
 from NarrativeForge.Engine.plugins.plugin_info import PluginInfo, PluginType
 from NarrativeForge.Engine.plugins.plugin_config import PluginConfig
+from NarrativeForge.Engine.versioning import VersionManager
 
 AGENT_RESPONSES = {
     "WorldAgent": json.dumps({
@@ -132,7 +133,7 @@ class FakeProvider(AIProvider):
 
 
 @pytest.fixture(autouse=True)
-async def setup_db():
+async def setup_db(tmp_path):
     test_db = Database("sqlite+aiosqlite:///:memory:")
     await test_db.init()
     provider = FakeProvider()
@@ -141,6 +142,8 @@ async def setup_db():
     init_generation(test_db, orchestrator)
     init_dialogues(test_db)
     init_quests(test_db)
+    version_manager = VersionManager(tmp_path / "versions")
+    init_versions(test_db, version_manager)
     yield
     await test_db.close()
 
@@ -764,6 +767,92 @@ async def test_story_bible_location_workflow(client: AsyncClient):
     assert bible["locations"][0]["name"] == "Dark Forest"
 
     resp = await client.delete(f"/api/projects/{pid}")
+    assert resp.status_code == 204
+
+
+async def test_version_workflow(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={"name": "Version Test", "genre": "RPG", "tone": "dark", "themes": ["versioning"]},
+    )
+    assert resp.status_code == 201
+    project_id = resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/versions",
+        json={"description": "Initial snapshot", "author": "tester"},
+    )
+    assert resp.status_code == 201
+    v1 = resp.json()
+    assert v1["version_number"] == 1
+    assert v1["description"] == "Initial snapshot"
+    assert v1["author"] == "tester"
+    assert v1["project_id"] == project_id
+    v1_id = v1["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/versions",
+        json={"description": "Second snapshot", "author": "tester"},
+    )
+    assert resp.status_code == 201
+    v2 = resp.json()
+    assert v2["version_number"] == 2
+    v2_id = v2["id"]
+
+    resp = await client.get(f"/api/projects/{project_id}/versions")
+    assert resp.status_code == 200
+    versions = resp.json()
+    assert len(versions) == 2
+    version_numbers = [v["version_number"] for v in versions]
+    assert 1 in version_numbers
+    assert 2 in version_numbers
+
+    resp = await client.get(f"/api/versions/{v1_id}")
+    assert resp.status_code == 200
+    assert resp.json()["id"] == v1_id
+
+    resp = await client.post(
+        "/api/versions/compare",
+        json={"version_id_a": v1_id, "version_id_b": v2_id},
+    )
+    assert resp.status_code == 200
+    diff = resp.json()
+    assert "differences" in diff
+    assert isinstance(diff["differences"], list)
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_version_delete(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={"name": "Version Delete Test", "genre": "SciFi", "tone": "gritty", "themes": ["delete"]},
+    )
+    assert resp.status_code == 201
+    project_id = resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/versions",
+        json={"description": "To be deleted", "author": "tester"},
+    )
+    assert resp.status_code == 201
+    version_id = resp.json()["id"]
+
+    resp = await client.get(f"/api/versions/{version_id}")
+    assert resp.status_code == 200
+
+    resp = await client.delete(f"/api/versions/{version_id}")
+    assert resp.status_code == 204
+
+    resp = await client.get(f"/api/versions/{version_id}")
+    assert resp.status_code == 404
+
+    resp = await client.get(f"/api/projects/{project_id}/versions")
+    assert resp.status_code == 200
+    assert len(resp.json()) == 0
+
+    resp = await client.delete(f"/api/projects/{project_id}")
     assert resp.status_code == 204
 
 
