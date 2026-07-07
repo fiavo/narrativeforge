@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NarrativeForge.App.Controls;
+using NarrativeForge.App.Layout;
 using NarrativeForge.App.Services;
 using NarrativeForge.Core.DTOs;
 
@@ -9,6 +11,9 @@ namespace NarrativeForge.App.ViewModels;
 public partial class GraphEditorViewModel : ObservableObject
 {
     private readonly UndoRedoManager _undoRedo = new();
+    private readonly HierarchicalLayout _hierarchicalLayout = new();
+    private readonly ForceDirectedLayout _forceDirectedLayout = new();
+
     [ObservableProperty]
     private string _graphName = string.Empty;
 
@@ -23,6 +28,14 @@ public partial class GraphEditorViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isDirty;
+
+    [ObservableProperty]
+    private bool _isLayouting;
+
+    [ObservableProperty]
+    private string _lastLayoutAlgorithm = "Hierarchical";
+
+    public GraphCanvas? Canvas { get; set; }
 
     public ObservableCollection<GraphNodeViewModel> Nodes { get; } = [];
 
@@ -110,6 +123,69 @@ public partial class GraphEditorViewModel : ObservableObject
         StartNodeId = Guid.Empty;
         IsDirty = false;
         NotifyUndoRedoStateChanged();
+    }
+
+    [RelayCommand]
+    private async Task LayoutHierarchicalAsync()
+    {
+        if (Nodes.Count == 0 || Canvas is null) return;
+        IsLayouting = true;
+        LastLayoutAlgorithm = "Hierarchical";
+
+        var graphNodes = Nodes.Select(n => new GraphNode(n.Id.ToString(), n.NodeType, n.X, n.Y)).ToList();
+        var graphEdges = Edges.Select(e => new GraphEdge(e.SourceId.ToString(), e.TargetId.ToString(), e.Condition)).ToList();
+
+        _hierarchicalLayout.ComputeLayout(graphNodes, graphEdges);
+
+        var positions = graphNodes.ToDictionary(n => n.Id, n => (n.X, n.Y));
+        foreach (var node in Nodes)
+        {
+            if (positions.TryGetValue(node.Id.ToString(), out var pos))
+            {
+                node.X = pos.X;
+                node.Y = pos.Y;
+            }
+        }
+
+        await LayoutAnimator.AnimateLayout(Canvas, Nodes);
+        IsLayouting = false;
+        IsDirty = true;
+    }
+
+    [RelayCommand]
+    private async Task LayoutForceDirectedAsync()
+    {
+        if (Nodes.Count == 0 || Canvas is null) return;
+        IsLayouting = true;
+        LastLayoutAlgorithm = "Force-Directed";
+
+        var graphNodes = Nodes.Select(n => new GraphNode(n.Id.ToString(), n.NodeType, n.X, n.Y)).ToList();
+        var graphEdges = Edges.Select(e => new GraphEdge(e.SourceId.ToString(), e.TargetId.ToString(), e.Condition)).ToList();
+
+        _forceDirectedLayout.ComputeLayout(graphNodes, graphEdges);
+
+        var positions = graphNodes.ToDictionary(n => n.Id, n => (n.X, n.Y));
+        foreach (var node in Nodes)
+        {
+            if (positions.TryGetValue(node.Id.ToString(), out var pos))
+            {
+                node.X = pos.X;
+                node.Y = pos.Y;
+            }
+        }
+
+        await LayoutAnimator.AnimateLayout(Canvas, Nodes);
+        IsLayouting = false;
+        IsDirty = true;
+    }
+
+    [RelayCommand]
+    private async Task LayoutLastUsedAsync()
+    {
+        if (LastLayoutAlgorithm == "Force-Directed")
+            await LayoutForceDirectedAsync();
+        else
+            await LayoutHierarchicalAsync();
     }
 
     private void NotifyUndoRedoStateChanged()
