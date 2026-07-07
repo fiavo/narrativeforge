@@ -10,6 +10,7 @@ from .director_agent import DirectorAgent, RequestType
 from .lore_agent import LoreAgent
 from .quest_agent import QuestAgent
 from .story_agent import StoryAgent
+from .timeline_agent import TimelineAgent
 from .world_agent import WorldAgent
 
 __all__ = [
@@ -28,5 +29,6 @@ __all__ = [
     "QuestAgent",
     "RequestType",
     "StoryAgent",
+    "TimelineAgent",
     "WorldAgent",
 ]
