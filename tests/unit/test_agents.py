@@ -356,6 +356,74 @@ class TestDirectorAgent:
         assert result.content["classification"] == "lore"
         assert result.metadata["classification"] == "lore"
 
+    @pytest.mark.asyncio
+    async def test_director_classifies_world(self):
+        plan = {
+            "request_type": "generate",
+            "classification": "world",
+            "sub_tasks": [{"agent": "story", "instruction": "Describe the kingdom of Eldoria and its geography"}],
+            "summary": "Generate world-building content",
+        }
+        provider = FakeProvider(json.dumps(plan))
+        agent = DirectorAgent(provider)
+        ctx = AgentContext(project=_make_project(), user_request="Describe the world of Eldoria")
+
+        result = await agent.execute(ctx)
+
+        assert result.content["classification"] == "world"
+        assert result.metadata["classification"] == "world"
+
+    @pytest.mark.asyncio
+    async def test_director_classifies_timeline(self):
+        plan = {
+            "request_type": "generate",
+            "classification": "timeline",
+            "sub_tasks": [{"agent": "story", "instruction": "Create a chronological history of the kingdom"}],
+            "summary": "Generate timeline content",
+        }
+        provider = FakeProvider(json.dumps(plan))
+        agent = DirectorAgent(provider)
+        ctx = AgentContext(project=_make_project(), user_request="Create a timeline of events in the kingdom")
+
+        result = await agent.execute(ctx)
+
+        assert result.content["classification"] == "timeline"
+        assert result.metadata["classification"] == "timeline"
+
+    @pytest.mark.asyncio
+    async def test_director_classifies_critique(self):
+        plan = {
+            "request_type": "analyze",
+            "classification": "critique",
+            "sub_tasks": [{"agent": "story", "instruction": "Provide critical analysis of the chapter"}],
+            "summary": "Critique the written content",
+        }
+        provider = FakeProvider(json.dumps(plan))
+        agent = DirectorAgent(provider)
+        ctx = AgentContext(project=_make_project(), user_request="Critique the chapter I just wrote")
+
+        result = await agent.execute(ctx)
+
+        assert result.content["classification"] == "critique"
+        assert result.metadata["classification"] == "critique"
+
+    @pytest.mark.asyncio
+    async def test_director_classifies_rewrite(self):
+        plan = {
+            "request_type": "revise",
+            "classification": "rewrite",
+            "sub_tasks": [{"agent": "story", "instruction": "Rewrite the opening scene with more tension"}],
+            "summary": "Rewrite content with improvements",
+        }
+        provider = FakeProvider(json.dumps(plan))
+        agent = DirectorAgent(provider)
+        ctx = AgentContext(project=_make_project(), user_request="Rewrite the opening scene to be more engaging")
+
+        result = await agent.execute(ctx)
+
+        assert result.content["classification"] == "rewrite"
+        assert result.metadata["classification"] == "rewrite"
+
 
 class TestConsistencyChecker:
     @pytest.mark.asyncio
