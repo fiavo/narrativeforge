@@ -65,3 +65,28 @@ def test_load_nonexistent_plugin_raises():
     pm = PluginManager()
     with pytest.raises(KeyError, match="not registered"):
         pm.load("nonexistent")
+
+
+def test_validate_plugin_valid():
+    pm = PluginManager()
+    plugin = PluginInfo(name="valid", entry_point="my.module", version="1.0.0")
+    is_valid, errors = pm.validate(plugin)
+    assert is_valid is True
+    assert errors == []
+
+
+def test_validate_plugin_empty_name():
+    pm = PluginManager()
+    plugin = PluginInfo(name="", entry_point="my.module")
+    is_valid, errors = pm.validate(plugin)
+    assert is_valid is False
+    assert "Plugin name is required" in errors
+
+
+def test_validate_plugin_invalid_type():
+    pm = PluginManager()
+    plugin = PluginInfo(name="bad", entry_point="my.module", version="1.0.0")
+    plugin.plugin_type = "not_a_type"
+    is_valid, errors = pm.validate(plugin)
+    assert is_valid is False
+    assert "Invalid plugin_type" in errors

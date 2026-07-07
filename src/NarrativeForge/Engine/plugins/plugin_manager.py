@@ -84,5 +84,17 @@ class PluginManager:
                 plugin.instance = mod
         return plugin.instance
 
+    def validate(self, plugin: PluginInfo) -> tuple[bool, list[str]]:
+        errors: list[str] = []
+        if not plugin.name or not plugin.name.strip():
+            errors.append("Plugin name is required")
+        if not plugin.entry_point or not plugin.entry_point.strip():
+            errors.append("Plugin entry_point is required")
+        if not isinstance(plugin.plugin_type, PluginType):
+            errors.append("Invalid plugin_type")
+        if not plugin.version or not plugin.version.strip():
+            errors.append("Plugin version is required")
+        return len(errors) == 0, errors
+
     def get_plugins(self) -> dict[str, PluginInfo]:
         return dict(self._plugins)
