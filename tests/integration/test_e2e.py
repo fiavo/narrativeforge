@@ -8,6 +8,9 @@ from NarrativeForge.Engine.storage.database import Database
 from NarrativeForge.Engine.api import init_projects, init_generation, init_dialogues, init_quests
 from NarrativeForge.Engine.ai_providers.base import AIProvider, CompletionOptions, Message
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
+from NarrativeForge.Engine.plugins.plugin_manager import PluginManager
+from NarrativeForge.Engine.plugins.plugin_info import PluginInfo, PluginType
+from NarrativeForge.Engine.plugins.plugin_config import PluginConfig
 
 AGENT_RESPONSES = {
     "WorldAgent": json.dumps({
@@ -620,3 +623,68 @@ async def test_export_formats_list(client: AsyncClient):
     assert "text" in formats
     assert "yaml" in formats
     assert len(formats) == 4
+
+
+async def test_plugin_discovery_api(client: AsyncClient):
+    resp = await client.get("/api/plugins")
+    assert resp.status_code == 200
+    plugins = resp.json()
+    assert isinstance(plugins, list)
+
+    assert len(plugins) >= 1
+    names = [p["name"] for p in plugins]
+    assert "example-agent" in names
+    example = next(p for p in plugins if p["name"] == "example-agent")
+    assert example["version"] == "1.0.0"
+    assert example["type"] == "agent"
+    assert example["enabled"] is True
+    assert isinstance(example["description"], str)
+    assert isinstance(example["author"], str)
+
+
+async def test_plugin_manager_end_to_end():
+    config = PluginConfig(config_path=None)
+    config._config_path = None
+    config._disabled = set()
+    manager = PluginManager(config=config)
+
+    discovered = manager.discover()
+    assert isinstance(discovered, list)
+    assert len(discovered) >= 1
+
+    ep_agent = next(p for p in discovered if p.name == "example-agent")
+    assert ep_agent.version == "1.0.0"
+    assert ep_agent.plugin_type == PluginType.AGENT
+
+    custom = PluginInfo(
+        name="test-custom",
+        version="2.0.0",
+        description="A custom test plugin",
+        author="Test Author",
+        plugin_type=PluginType.PROVIDER,
+        entry_point="collections:OrderedDict",
+    )
+    manager.register(custom)
+    plugins = manager.get_plugins()
+    assert "test-custom" in plugins
+    assert plugins["test-custom"].version == "2.0.0"
+
+    instance = manager.load("test-custom")
+    assert instance is not None
+    assert plugins["test-custom"].instance is instance
+
+    instance2 = manager.load("test-custom")
+    assert instance2 is instance
+
+    disabled = PluginInfo(
+        name="disabled-plugin",
+        enabled=False,
+        entry_point="collections:OrderedDict",
+    )
+    manager.register(disabled)
+    config.set_enabled("disabled-plugin", False)
+    with pytest.raises(ValueError, match="disabled"):
+        manager.load("disabled-plugin")
+
+    all_plugins = manager.get_plugins()
+    assert "disabled-plugin" not in all_plugins

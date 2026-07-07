@@ -64,7 +64,7 @@ class PipelineOrchestrator:
                 instance = self._plugin_manager.load(plugin_info.name)
                 if isinstance(instance, BaseAgent):
                     self._plugin_agents[plugin_info.name] = instance
-            except (KeyError, ValueError):
+            except (KeyError, ValueError, ImportError):
                 continue
 
     def _build_agent_context(
