@@ -5,6 +5,7 @@ from .consistency_checker import (
     ConsistencyReport,
     IssueSeverity,
 )
+from .critic_agent import CriticAgent, CriticReport
 from .dialogue_agent import DialogueAgent, DialogueType
 from .director_agent import DirectorAgent, RequestType
 from .lore_agent import LoreAgent
@@ -21,6 +22,8 @@ __all__ = [
     "ConsistencyChecker",
     "ConsistencyIssue",
     "ConsistencyReport",
+    "CriticAgent",
+    "CriticReport",
     "DialogueAgent",
     "DialogueType",
     "DirectorAgent",
