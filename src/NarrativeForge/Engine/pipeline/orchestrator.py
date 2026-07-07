@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from NarrativeForge.Engine.ai_providers.base import AIProvider
-from NarrativeForge.Engine.agents.base import AgentContext, AgentResult
+from NarrativeForge.Engine.agents.base import AgentContext, AgentResult, BaseAgent
 from NarrativeForge.Engine.agents.director_agent import DirectorAgent
 from NarrativeForge.Engine.agents.story_agent import StoryAgent
 from NarrativeForge.Engine.agents.dialogue_agent import DialogueAgent
@@ -16,6 +16,8 @@ from NarrativeForge.Engine.agents.consistency_checker import ConsistencyChecker
 from NarrativeForge.Engine.models.lore import LoreEntry
 from NarrativeForge.Engine.models.location import Location
 from NarrativeForge.Engine.models.timeline import TimelineEvent
+from NarrativeForge.Engine.plugins.plugin_manager import PluginManager
+from NarrativeForge.Engine.plugins.plugin_info import PluginType
 
 
 @dataclass
@@ -27,7 +29,7 @@ class PipelineResult:
 
 
 class PipelineOrchestrator:
-    def __init__(self, provider: AIProvider) -> None:
+    def __init__(self, provider: AIProvider, plugins_dir: str | None = None) -> None:
         self._provider = provider
         self._director = DirectorAgent(provider)
         self._story = StoryAgent(provider)
@@ -39,10 +41,31 @@ class PipelineOrchestrator:
         self._critic = CriticAgent(provider)
         self._rewrite = RewriteAgent(provider)
         self._checker = ConsistencyChecker(provider)
+        self._plugin_manager = PluginManager(plugins_dir=plugins_dir)
+        self._plugin_agents: dict[str, BaseAgent] = {}
+        self._discover_plugin_agents()
 
     @property
     def provider(self) -> AIProvider:
         return self._provider
+
+    @property
+    def plugin_agents(self) -> dict[str, BaseAgent]:
+        return dict(self._plugin_agents)
+
+    def _discover_plugin_agents(self) -> None:
+        for plugin_info in self._plugin_manager.discover():
+            if plugin_info.plugin_type != PluginType.AGENT:
+                continue
+            if not plugin_info.enabled:
+                continue
+            self._plugin_manager.register(plugin_info)
+            try:
+                instance = self._plugin_manager.load(plugin_info.name)
+                if isinstance(instance, BaseAgent):
+                    self._plugin_agents[plugin_info.name] = instance
+            except (KeyError, ValueError):
+                continue
 
     def _build_agent_context(
         self, context: AgentContext, prev_results: dict[str, Any]
@@ -158,6 +181,12 @@ class PipelineOrchestrator:
             quest_ctx = self._build_agent_context(context, prev_results)
             quest_res = await self._quest.execute(quest_ctx)
             return [story_res, quest_res]
+
+        # Check plugin agents
+        if classification in self._plugin_agents:
+            plugin_agent = self._plugin_agents[classification]
+            agent_ctx = self._build_agent_context(context, prev_results)
+            return [await plugin_agent.execute(agent_ctx)]
 
         # Default: 'story' and any unknown classification
         agent_ctx = self._build_agent_context(context, prev_results)
