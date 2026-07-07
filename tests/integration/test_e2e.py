@@ -688,3 +688,120 @@ async def test_plugin_manager_end_to_end():
 
     all_plugins = manager.get_plugins()
     assert "disabled-plugin" not in all_plugins
+
+
+async def test_story_bible_character_workflow(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={"name": "Story Test", "genre": "RPG"},
+    )
+    assert resp.status_code == 201
+    pid = resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{pid}/characters",
+        json={"name": "Hero", "role": "Protagonist", "backstory": "A legendary warrior"},
+    )
+    assert resp.status_code == 201
+    char = resp.json()
+    assert char["name"] == "Hero"
+    cid = char["id"]
+
+    resp = await client.get(f"/api/projects/{pid}/characters/{cid}")
+    assert resp.status_code == 200
+    assert resp.json()["name"] == "Hero"
+    assert resp.json()["backstory"] == "A legendary warrior"
+
+    resp = await client.get(f"/api/projects/{pid}/characters")
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
+
+    resp = await client.delete(f"/api/projects/{pid}/characters/{cid}")
+    assert resp.status_code == 204
+
+    resp = await client.get(f"/api/projects/{pid}/characters/{cid}")
+    assert resp.status_code == 404
+
+    resp = await client.delete(f"/api/projects/{pid}")
+    assert resp.status_code == 204
+
+
+async def test_story_bible_location_workflow(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={"name": "Location Test", "genre": "RPG"},
+    )
+    assert resp.status_code == 201
+    pid = resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{pid}/locations",
+        json={
+            "name": "Dark Forest",
+            "type": "wilderness",
+            "description": "A mysterious forest",
+            "significance": "Quest hub",
+        },
+    )
+    assert resp.status_code == 201
+    loc = resp.json()
+    assert loc["name"] == "Dark Forest"
+    assert loc["type"] == "wilderness"
+    lid = loc["id"]
+
+    resp = await client.get(f"/api/projects/{pid}/locations/{lid}")
+    assert resp.status_code == 200
+    assert resp.json()["description"] == "A mysterious forest"
+
+    resp = await client.get(f"/api/projects/{pid}/locations")
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
+
+    resp = await client.get(f"/api/projects/{pid}/story-bible")
+    assert resp.status_code == 200
+    bible = resp.json()
+    assert len(bible["locations"]) == 1
+    assert bible["locations"][0]["name"] == "Dark Forest"
+
+    resp = await client.delete(f"/api/projects/{pid}")
+    assert resp.status_code == 204
+
+
+async def test_story_bible_faction_workflow(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={"name": "Faction Test", "genre": "RPG"},
+    )
+    assert resp.status_code == 201
+    pid = resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{pid}/factions",
+        json={
+            "name": "Dark Order",
+            "description": "An evil organization",
+            "goals": ["conquest", "power"],
+        },
+    )
+    assert resp.status_code == 201
+    fac = resp.json()
+    assert fac["name"] == "Dark Order"
+    assert fac["goals"] == ["conquest", "power"]
+    fid = fac["id"]
+
+    resp = await client.get(f"/api/projects/{pid}/factions/{fid}")
+    assert resp.status_code == 200
+    assert resp.json()["description"] == "An evil organization"
+
+    resp = await client.get(f"/api/projects/{pid}/factions")
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
+
+    resp = await client.get(f"/api/projects/{pid}/story-bible")
+    assert resp.status_code == 200
+    bible = resp.json()
+    assert len(bible["factions"]) == 1
+    assert bible["factions"][0]["name"] == "Dark Order"
+
+    resp = await client.delete(f"/api/projects/{pid}")
+    assert resp.status_code == 204
