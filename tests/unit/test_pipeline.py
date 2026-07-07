@@ -457,3 +457,202 @@ class TestPipelineOrchestrator:
         # Verify all 3 stages ran and completed
         assert result.stages_completed == ["Director", "Story", "Consistency"]
         assert provider.call_count == 3
+
+    @pytest.mark.asyncio
+    async def test_pipeline_routes_to_world_agent(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "world",
+            "sub_tasks": [],
+            "summary": "Generate world",
+        }
+        world_content = {
+            "locations": [
+                {"name": "Silverwood", "type": "city", "description": "A forest city", "significance": "Capital of the elves"}
+            ],
+            "factions": [
+                {"name": "Silver Council", "description": "Elven ruling body", "goals": ["Peace"], "allies": [], "enemies": []}
+            ],
+            "lore_entries": [],
+        }
+        consistency_report = {"score": 0.9, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "world-builder": json.dumps(world_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Create a world setting with cities and factions",
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert "World" in result.stages_completed
+        assert result.content == world_content
+        assert result.metadata["classification"] == "world"
+
+    @pytest.mark.asyncio
+    async def test_pipeline_routes_to_timeline_agent(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "timeline",
+            "sub_tasks": [],
+            "summary": "Generate timeline",
+        }
+        timeline_content = {
+            "title": "The Great War",
+            "timestamp": "Year 1024",
+            "description": "A devastating war between factions",
+            "participants": ["Silver Council", "Shadow Guild"],
+            "location": "Silverwood",
+            "consequences": ["Factions weakened", "New alliance formed"],
+        }
+        consistency_report = {"score": 0.88, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "chronologist": json.dumps(timeline_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Create a timeline of major events",
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert "Timeline" in result.stages_completed
+        assert result.content == timeline_content
+        assert result.metadata["classification"] == "timeline"
+
+    @pytest.mark.asyncio
+    async def test_pipeline_world_changes_applied(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "world",
+            "sub_tasks": [],
+            "summary": "Generate world",
+        }
+        world_content = {
+            "locations": [
+                {"name": "Silverwood", "type": "city", "description": "A forest city", "significance": "Capital"}
+            ],
+            "factions": [
+                {"name": "Silver Council", "description": "Ruling body", "goals": ["Peace"], "allies": [], "enemies": []}
+            ],
+            "lore_entries": [],
+        }
+        consistency_report = {"score": 0.9, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "world-builder": json.dumps(world_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        bible = _make_bible()
+        initial_loc_count = len(bible.locations)
+        initial_faction_count = len(bible.factions)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Create a world setting",
+            story_bible=bible,
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert len(bible.locations) == initial_loc_count + 1
+        assert len(bible.factions) == initial_faction_count + 1
+        assert result.metadata["world_elements_added"] == 2
+
+    @pytest.mark.asyncio
+    async def test_pipeline_routes_to_critique_agent(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "critique",
+            "sub_tasks": [],
+            "summary": "Evaluate content",
+        }
+        critic_content = {
+            "overall_score": 0.85,
+            "scores": {
+                "coherence": 0.9,
+                "character_depth": 0.8,
+                "pacing": 0.85,
+                "dialogue_quality": 0.8,
+                "creativity": 0.9,
+                "emotional_impact": 0.85,
+            },
+            "summary": "Strong narrative with good pacing",
+            "strengths": ["Good world-building"],
+            "weaknesses": ["Could develop characters more"],
+        }
+        consistency_report = {"score": 0.9, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "narrative quality critic": json.dumps(critic_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Evaluate this story content",
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert "Critic" in result.stages_completed
+        assert result.content == critic_content
+        assert result.metadata["classification"] == "critique"
+
+    @pytest.mark.asyncio
+    async def test_pipeline_routes_to_rewrite_agent(self):
+        director_plan = {
+            "request_type": "generate",
+            "classification": "rewrite",
+            "sub_tasks": [],
+            "summary": "Rewrite content",
+        }
+        rewrite_content = {
+            "rewritten_text": "The ancient forest whispered secrets of ages past.",
+            "mode": "polish",
+            "changes_summary": "Enhanced descriptions and improved flow",
+        }
+        consistency_report = {"score": 0.9, "issues": [], "summary": "OK"}
+
+        provider = FakeProvider(
+            responses={
+                "narrative director": json.dumps(director_plan),
+                "expert text rewriter": json.dumps(rewrite_content),
+                "consistency checker": json.dumps(consistency_report),
+            }
+        )
+
+        orchestrator = PipelineOrchestrator(provider)
+        ctx = AgentContext(
+            project=_make_project(),
+            user_request="Rewrite this text to improve flow",
+        )
+
+        result = await orchestrator.run(ctx)
+
+        assert "Rewrite" in result.stages_completed
+        assert result.content == rewrite_content
+        assert result.metadata["classification"] == "rewrite"

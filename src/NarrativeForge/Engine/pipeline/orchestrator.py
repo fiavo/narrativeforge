@@ -8,8 +8,14 @@ from NarrativeForge.Engine.agents.story_agent import StoryAgent
 from NarrativeForge.Engine.agents.dialogue_agent import DialogueAgent
 from NarrativeForge.Engine.agents.quest_agent import QuestAgent
 from NarrativeForge.Engine.agents.lore_agent import LoreAgent
+from NarrativeForge.Engine.agents.world_agent import WorldAgent
+from NarrativeForge.Engine.agents.timeline_agent import TimelineAgent
+from NarrativeForge.Engine.agents.critic_agent import CriticAgent
+from NarrativeForge.Engine.agents.rewrite_agent import RewriteAgent
 from NarrativeForge.Engine.agents.consistency_checker import ConsistencyChecker
 from NarrativeForge.Engine.models.lore import LoreEntry
+from NarrativeForge.Engine.models.location import Location
+from NarrativeForge.Engine.models.timeline import TimelineEvent
 
 
 @dataclass
@@ -28,6 +34,10 @@ class PipelineOrchestrator:
         self._dialogue = DialogueAgent(provider)
         self._quest = QuestAgent(provider)
         self._lore = LoreAgent(provider)
+        self._world = WorldAgent(provider)
+        self._timeline = TimelineAgent(provider)
+        self._critic = CriticAgent(provider)
+        self._rewrite = RewriteAgent(provider)
         self._checker = ConsistencyChecker(provider)
 
     @property
@@ -80,6 +90,12 @@ class PipelineOrchestrator:
         # Apply lore changes to story bible
         lore_added = self._apply_lore_changes(context, results)
 
+        # Apply world changes to story bible
+        world_added = self._apply_world_changes(context, results)
+
+        # Apply timeline changes to story bible
+        timeline_added = self._apply_timeline_changes(context, results)
+
         # Determine content from the last non-checker, non-director result
         content = agent_results[-1].content if agent_results else None
 
@@ -91,6 +107,8 @@ class PipelineOrchestrator:
             metadata["critical_count"] = consistency_result.metadata.get("critical_count", 0)
         metadata["classification"] = classification
         metadata["lore_entries_added"] = lore_added
+        metadata["world_elements_added"] = world_added
+        metadata["timeline_events_added"] = timeline_added
 
         return PipelineResult(
             content=content,
@@ -116,6 +134,22 @@ class PipelineOrchestrator:
         if classification == "lore":
             agent_ctx = self._build_agent_context(context, prev_results)
             return [await self._lore.execute(agent_ctx)]
+
+        if classification == "world":
+            agent_ctx = self._build_agent_context(context, prev_results)
+            return [await self._world.execute(agent_ctx)]
+
+        if classification == "timeline":
+            agent_ctx = self._build_agent_context(context, prev_results)
+            return [await self._timeline.execute(agent_ctx)]
+
+        if classification == "critique":
+            agent_ctx = self._build_agent_context(context, prev_results)
+            return [await self._critic.execute(agent_ctx)]
+
+        if classification == "rewrite":
+            agent_ctx = self._build_agent_context(context, prev_results)
+            return [await self._rewrite.execute(agent_ctx)]
 
         if classification == "mixed":
             story_ctx = self._build_agent_context(context, prev_results)
@@ -151,3 +185,61 @@ class PipelineOrchestrator:
                     context.story_bible.lore_entries[entry.id] = entry
                     lore_added += 1
         return lore_added
+
+    def _apply_world_changes(
+        self, context: AgentContext, results: list[AgentResult]
+    ) -> int:
+        if not context.story_bible:
+            return 0
+
+        world_added = 0
+        for result in results:
+            for change in result.changes:
+                locations_data = change.get("locations")
+                if locations_data:
+                    for loc_dict in locations_data.get("new", []):
+                        location = Location(
+                            name=loc_dict.get("name", ""),
+                            type=loc_dict.get("type", ""),
+                            description=loc_dict.get("description", ""),
+                            significance=loc_dict.get("significance", ""),
+                        )
+                        context.story_bible.locations[location.id] = location
+                        world_added += 1
+
+                factions_data = change.get("factions")
+                if factions_data:
+                    for faction_dict in factions_data.get("new", []):
+                        from NarrativeForge.Engine.models.story_bible import Faction
+                        faction = Faction(
+                            name=faction_dict.get("name", ""),
+                            description=faction_dict.get("description", ""),
+                            goals=faction_dict.get("goals", []),
+                        )
+                        context.story_bible.factions[faction.id] = faction
+                        world_added += 1
+
+        return world_added
+
+    def _apply_timeline_changes(
+        self, context: AgentContext, results: list[AgentResult]
+    ) -> int:
+        if not context.story_bible:
+            return 0
+
+        timeline_added = 0
+        for result in results:
+            for change in result.changes:
+                timeline_data = change.get("timeline")
+                if not timeline_data:
+                    continue
+                for event_dict in timeline_data.get("new", []):
+                    event = TimelineEvent(
+                        title=event_dict.get("title", ""),
+                        description=event_dict.get("description", ""),
+                        timestamp=event_dict.get("timestamp", ""),
+                        consequences=event_dict.get("consequences", []),
+                    )
+                    context.story_bible.timeline.append(event)
+                    timeline_added += 1
+        return timeline_added
