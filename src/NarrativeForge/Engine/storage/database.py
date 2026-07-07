@@ -6,6 +6,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    Integer,
     String,
     Text,
     delete as sql_delete,
@@ -43,6 +44,7 @@ from NarrativeForge.Engine.models import (
     QuestCondition,
     StoryBible,
     TimelineEvent,
+    Version,
 )
 
 
@@ -549,6 +551,46 @@ class QuestGraphRow(Base):
         )
 
 
+class VersionRow(Base):
+    __tablename__ = "versions"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    version_number = Column(Integer, nullable=False)
+    timestamp = Column(DateTime, nullable=False)
+    description = Column(String, default="")
+    author = Column(String, default="")
+    snapshot = Column(Text, default="{}")
+    size_bytes = Column(Integer, default=0)
+
+    project = relationship("ProjectRow", backref="versions")
+
+    def to_model(self) -> Version:
+        return Version(
+            id=UUID(self.id),
+            project_id=UUID(self.project_id),
+            version_number=self.version_number,
+            timestamp=self.timestamp,
+            description=self.description,
+            author=self.author,
+            snapshot=json.loads(self.snapshot),
+            size_bytes=self.size_bytes,
+        )
+
+    @classmethod
+    def from_model(cls, version: Version) -> "VersionRow":
+        return cls(
+            id=str(version.id),
+            project_id=str(version.project_id),
+            version_number=version.version_number,
+            timestamp=version.timestamp,
+            description=version.description,
+            author=version.author,
+            snapshot=json.dumps(version.snapshot),
+            size_bytes=version.size_bytes,
+        )
+
+
 class Database:
     def __init__(self, db_url: str = "sqlite+aiosqlite:///:memory:"):
         self.db_url = db_url
@@ -875,6 +917,40 @@ class Database:
         async with AsyncSession(self.engine) as session:
             result = await session.execute(
                 sql_delete(QuestGraphRow).where(QuestGraphRow.id == graph_id)
+            )
+            await session.commit()
+            return result.rowcount > 0
+
+    async def create_version(self, version: Version) -> Version:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = VersionRow.from_model(version)
+            session.add(row)
+            await session.commit()
+            return version
+
+    async def get_version(self, version_id: UUID) -> Version | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(VersionRow).where(VersionRow.id == str(version_id))
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_versions(self, project_id: UUID) -> list[Version]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(VersionRow).where(VersionRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def delete_version(self, version_id: UUID) -> bool:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                sql_delete(VersionRow).where(VersionRow.id == str(version_id))
             )
             await session.commit()
             return result.rowcount > 0

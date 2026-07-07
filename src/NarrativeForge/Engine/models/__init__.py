@@ -23,6 +23,7 @@ from .quest_graph import (
     QuestStateTracker,
     QuestGraph,
 )
+from .version import Version
 
 __all__ = [
     "GameGenre",
@@ -57,4 +58,5 @@ __all__ = [
     "QuestEdge",
     "QuestStateTracker",
     "QuestGraph",
+    "Version",
 ]
