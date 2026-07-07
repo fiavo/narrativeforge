@@ -4,13 +4,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from NarrativeForge.Engine.plugins.plugin_config import PluginConfig
 from NarrativeForge.Engine.plugins.plugin_info import PluginInfo, PluginType
 
 
 class PluginManager:
-    def __init__(self, plugins_dir: str | Path | None = None) -> None:
+    def __init__(
+        self,
+        plugins_dir: str | Path | None = None,
+        config: PluginConfig | None = None,
+    ) -> None:
         self._plugins: dict[str, PluginInfo] = {}
         self._plugins_dir = Path(plugins_dir) if plugins_dir else Path("plugins")
+        self._config = config or PluginConfig()
 
     def discover(self) -> list[PluginInfo]:
         discovered: list[PluginInfo] = []
@@ -97,4 +103,8 @@ class PluginManager:
         return len(errors) == 0, errors
 
     def get_plugins(self) -> dict[str, PluginInfo]:
-        return dict(self._plugins)
+        return {
+            name: info
+            for name, info in self._plugins.items()
+            if self._config.is_enabled(name)
+        }
