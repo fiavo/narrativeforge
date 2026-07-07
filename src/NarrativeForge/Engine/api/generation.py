@@ -11,6 +11,10 @@ from NarrativeForge.Engine.agents import (
     QuestAgent,
     LoreAgent,
     ConsistencyChecker,
+    WorldAgent,
+    TimelineAgent,
+    CriticAgent,
+    RewriteAgent,
 )
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
 from NarrativeForge.Engine.storage.database import Database
@@ -21,6 +25,10 @@ KNOWN_AGENTS: dict[str, type[BaseAgent]] = {
     "QuestAgent": QuestAgent,
     "LoreAgent": LoreAgent,
     "ConsistencyChecker": ConsistencyChecker,
+    "WorldAgent": WorldAgent,
+    "TimelineAgent": TimelineAgent,
+    "CriticAgent": CriticAgent,
+    "RewriteAgent": RewriteAgent,
 }
 
 router = APIRouter(prefix="/api", tags=["generation"])

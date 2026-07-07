@@ -9,6 +9,63 @@ from NarrativeForge.Engine.api import init_projects, init_generation, init_dialo
 from NarrativeForge.Engine.ai_providers.base import AIProvider, CompletionOptions, Message
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
 
+AGENT_RESPONSES = {
+    "WorldAgent": json.dumps({
+        "locations": [
+            {
+                "name": "Silverhold",
+                "type": "city",
+                "description": "A gleaming city of white stone.",
+                "significance": "Capital of the realm.",
+            }
+        ],
+        "factions": [
+            {
+                "name": "The Council of Stars",
+                "description": "A secretive governing body.",
+                "goals": ["Maintain peace"],
+                "allies": ["Silverhold"],
+                "enemies": [],
+            }
+        ],
+        "lore_entries": [
+            {
+                "title": "The Founding",
+                "category": "culture",
+                "content": "Silverhold was built by the first kings.",
+                "tags": ["history"],
+            }
+        ],
+    }),
+    "TimelineAgent": json.dumps({
+        "title": "The Great Awakening",
+        "timestamp": "Year 1000",
+        "description": "Magic returned to the world.",
+        "participants": ["The Archmage", "The Council of Stars"],
+        "location": "Silverhold",
+        "consequences": ["New era of exploration"],
+    }),
+    "CriticAgent": json.dumps({
+        "overall_score": 0.88,
+        "scores": {
+            "coherence": 0.9,
+            "character_depth": 0.85,
+            "pacing": 0.88,
+            "dialogue_quality": 0.85,
+            "creativity": 0.9,
+            "emotional_impact": 0.87,
+        },
+        "summary": "Strong narrative overall.",
+        "strengths": ["Good pacing", "Creative world-building"],
+        "weaknesses": ["Minor dialogue issues"],
+    }),
+    "RewriteAgent": json.dumps({
+        "rewritten_text": "The warrior's blade gleamed in the torchlight.",
+        "mode": "polish",
+        "changes_summary": "Enhanced description.",
+    }),
+}
+
 
 class FakeProvider(AIProvider):
     def __init__(self, responses: dict[str, str] | None = None):
@@ -19,6 +76,16 @@ class FakeProvider(AIProvider):
         self, messages: list[Message], options: CompletionOptions | None = None
     ) -> str:
         self.call_count += 1
+        for msg in messages:
+            content = msg.content if hasattr(msg, "content") else ""
+            if "world-builder" in content:
+                return AGENT_RESPONSES["WorldAgent"]
+            if "chronologist" in content:
+                return AGENT_RESPONSES["TimelineAgent"]
+            if "quality critic" in content:
+                return AGENT_RESPONSES["CriticAgent"]
+            if "text rewriter" in content:
+                return AGENT_RESPONSES["RewriteAgent"]
         if self.call_count == 1:
             return self._responses.get(
                 "director",
@@ -376,6 +443,94 @@ async def test_quest_graph_workflow(client: AsyncClient):
 
     resp = await client.get(f"/api/quests/{graph['id']}")
     assert resp.status_code == 404
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_world_generation_flow(client: AsyncClient):
+    project_id = await _create_project(client)
+
+    resp = await client.post(
+        "/api/agents/WorldAgent",
+        json={"project_id": project_id, "request": "Generate a fantasy world"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "WorldAgent"
+    assert isinstance(data["content"], dict)
+    assert "locations" in data["content"]
+    assert "factions" in data["content"]
+    assert "lore_entries" in data["content"]
+    assert len(data["content"]["locations"]) > 0
+    assert "metadata" in data
+    assert "location_count" in data["metadata"]
+    assert "faction_count" in data["metadata"]
+    assert "lore_entry_count" in data["metadata"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_timeline_generation_flow(client: AsyncClient):
+    project_id = await _create_project(client)
+
+    resp = await client.post(
+        "/api/agents/TimelineAgent",
+        json={"project_id": project_id, "request": "Create a timeline event"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "TimelineAgent"
+    assert isinstance(data["content"], dict)
+    assert "title" in data["content"]
+    assert "description" in data["content"]
+    assert "metadata" in data
+    assert "has_title" in data["metadata"]
+    assert "has_description" in data["metadata"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_critic_flow(client: AsyncClient):
+    project_id = await _create_project(client)
+
+    resp = await client.post(
+        "/api/agents/CriticAgent",
+        json={"project_id": project_id, "request": "Evaluate this story"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "CriticAgent"
+    assert isinstance(data["content"], dict)
+    assert "overall_score" in data["content"]
+    assert "scores" in data["content"]
+    assert "summary" in data["content"]
+    assert "metadata" in data
+    assert "overall_score" in data["metadata"]
+    assert "criterion_count" in data["metadata"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_rewrite_flow(client: AsyncClient):
+    project_id = await _create_project(client)
+
+    resp = await client.post(
+        "/api/agents/RewriteAgent",
+        json={"project_id": project_id, "request": "Polish this: The hero walked."},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["agent_name"] == "RewriteAgent"
+    assert isinstance(data["content"], dict)
+    assert "rewritten_text" in data["content"]
+    assert "mode" in data["content"]
+    assert "metadata" in data
+    assert "mode" in data["metadata"]
+    assert "temperature" in data["metadata"]
 
     resp = await client.delete(f"/api/projects/{project_id}")
     assert resp.status_code == 204
