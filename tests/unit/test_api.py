@@ -238,3 +238,40 @@ async def test_create_quest_graph(client: AsyncClient):
     assert data["start_node_id"] == "start1"
     assert "start1" in data["nodes"]
     assert data["nodes"]["start1"]["description"] == "Start your adventure"
+
+
+async def test_export_formats(client: AsyncClient):
+    resp = await client.get("/api/export/formats")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "formats" in data
+    assert "json" in data["formats"]
+    assert "markdown" in data["formats"]
+    assert "text" in data["formats"]
+    assert "yaml" in data["formats"]
+
+
+async def test_export_content(client: AsyncClient):
+    payload = {
+        "format": "json",
+        "content": {"title": "Test Story", "genre": "Fantasy"},
+        "filename": "story",
+    }
+    resp = await client.post("/api/export", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["filename"] == "story.json"
+    assert data["format"] == "json"
+    assert "title" in data["content"]
+    assert "Test Story" in data["content"]
+
+
+async def test_export_invalid_format(client: AsyncClient):
+    payload = {
+        "format": "invalid",
+        "content": "test",
+        "filename": "test",
+    }
+    resp = await client.post("/api/export", json=payload)
+    assert resp.status_code == 400
+    assert "Unknown format" in resp.json()["detail"]

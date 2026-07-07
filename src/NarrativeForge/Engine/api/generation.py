@@ -19,6 +19,8 @@ from NarrativeForge.Engine.agents import (
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
 from NarrativeForge.Engine.storage.database import Database
 
+EXPORT_FORMATS = ["json", "markdown", "text", "yaml"]
+
 KNOWN_AGENTS: dict[str, type[BaseAgent]] = {
     "StoryAgent": StoryAgent,
     "DialogueAgent": DialogueAgent,
@@ -83,6 +85,62 @@ async def generate(body: GenerateRequest):
         content=result.content,
         stages=result.stages_completed,
         metadata=metadata,
+    )
+
+
+class ExportRequest(BaseModel):
+    format: str = Field(description="Export format: json, markdown, text, or yaml")
+    content: dict | list | str | None = None
+    filename: str = Field(default="export", description="Base filename without extension")
+
+
+class ExportResponse(BaseModel):
+    filename: str
+    format: str
+    content: str
+
+
+@router.get("/export/formats")
+async def list_export_formats():
+    return {"formats": EXPORT_FORMATS}
+
+
+@router.post("/export", response_model=ExportResponse)
+async def export_content(body: ExportRequest):
+    if body.format not in EXPORT_FORMATS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown format: {body.format}. Valid formats: {', '.join(EXPORT_FORMATS)}",
+        )
+
+    raw = body.content if body.content is not None else ""
+
+    if body.format == "json":
+        import json
+        export_content = json.dumps(raw, indent=2)
+    elif body.format == "yaml":
+        import yaml
+        export_content = yaml.dump(raw, default_flow_style=False)
+    elif body.format == "markdown":
+        if isinstance(raw, dict):
+            lines = []
+            for key, val in raw.items():
+                lines.append(f"## {key}\n\n{val}")
+            export_content = "\n\n".join(lines)
+        elif isinstance(raw, list):
+            lines = [f"- {item}" for item in raw]
+            export_content = "\n".join(lines)
+        else:
+            export_content = str(raw)
+    else:
+        export_content = str(raw)
+
+    filename = f"{body.filename}.{body.format}"
+
+    return ExportResponse(
+        filename=filename,
+        format=body.format,
+        content=export_content,
     )
 
 
