@@ -26,7 +26,10 @@ from NarrativeForge.Engine.models import (
     DialogueEdge,
     DialogueChoice,
     DialogueCondition,
+    Faction,
     GameGenre,
+    Location,
+    LoreEntry,
     PersonalityProfile,
     Project,
     Quest,
@@ -38,6 +41,8 @@ from NarrativeForge.Engine.models import (
     QuestNodeType,
     QuestEdge,
     QuestCondition,
+    StoryBible,
+    TimelineEvent,
 )
 
 
@@ -61,6 +66,10 @@ class ProjectRow(Base):
     updated_at = Column(DateTime, nullable=False)
 
     characters = relationship("CharacterRow", back_populates="project", cascade="all, delete-orphan")
+    locations = relationship("LocationRow", back_populates="project", cascade="all, delete-orphan")
+    factions = relationship("FactionRow", back_populates="project", cascade="all, delete-orphan")
+    timeline_events = relationship("TimelineEventRow", back_populates="project", cascade="all, delete-orphan")
+    lore_entries = relationship("LoreEntryRow", back_populates="project", cascade="all, delete-orphan")
 
     def to_model(self) -> Project:
         return Project(
@@ -159,6 +168,172 @@ class CharacterRow(Base):
             appearance=character.appearance,
             is_alive=character.is_alive,
             is_locked=character.is_locked,
+        )
+
+
+class LocationRow(Base):
+    __tablename__ = "locations"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    type = Column(String, default="")
+    description = Column(String, default="")
+    connected_to = Column(Text, default="[]")
+    inhabitants = Column(Text, default="[]")
+    factions_present = Column(Text, default="[]")
+    significance = Column(String, default="")
+    is_locked = Column(Boolean, default=False)
+
+    project = relationship("ProjectRow", back_populates="locations")
+
+    def to_model(self) -> Location:
+        return Location(
+            id=UUID(self.id),
+            name=self.name,
+            type=self.type,
+            description=self.description,
+            connected_to=[UUID(u) for u in json.loads(self.connected_to)],
+            inhabitants=[UUID(u) for u in json.loads(self.inhabitants)],
+            factions_present=[UUID(u) for u in json.loads(self.factions_present)],
+            significance=self.significance,
+            is_locked=self.is_locked,
+        )
+
+    @classmethod
+    def from_model(cls, location: Location, project_id: UUID) -> "LocationRow":
+        return cls(
+            id=str(location.id),
+            project_id=str(project_id),
+            name=location.name,
+            type=location.type,
+            description=location.description,
+            connected_to=json.dumps([str(u) for u in location.connected_to]),
+            inhabitants=json.dumps([str(u) for u in location.inhabitants]),
+            factions_present=json.dumps([str(u) for u in location.factions_present]),
+            significance=location.significance,
+            is_locked=location.is_locked,
+        )
+
+
+class FactionRow(Base):
+    __tablename__ = "factions"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String, default="")
+    goals = Column(Text, default="[]")
+    members = Column(Text, default="[]")
+    allies = Column(Text, default="[]")
+    enemies = Column(Text, default="[]")
+
+    project = relationship("ProjectRow", back_populates="factions")
+
+    def to_model(self) -> Faction:
+        return Faction(
+            id=UUID(self.id),
+            name=self.name,
+            description=self.description,
+            goals=json.loads(self.goals),
+            members=[UUID(u) for u in json.loads(self.members)],
+            allies=[UUID(u) for u in json.loads(self.allies)],
+            enemies=[UUID(u) for u in json.loads(self.enemies)],
+        )
+
+    @classmethod
+    def from_model(cls, faction: Faction, project_id: UUID) -> "FactionRow":
+        return cls(
+            id=str(faction.id),
+            project_id=str(project_id),
+            name=faction.name,
+            description=faction.description,
+            goals=json.dumps(faction.goals),
+            members=json.dumps([str(u) for u in faction.members]),
+            allies=json.dumps([str(u) for u in faction.allies]),
+            enemies=json.dumps([str(u) for u in faction.enemies]),
+        )
+
+
+class TimelineEventRow(Base):
+    __tablename__ = "timeline_events"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, default="")
+    timestamp = Column(String, default="")
+    participants = Column(Text, default="[]")
+    location_id = Column(String, nullable=True)
+    consequences = Column(Text, default="[]")
+    order = Column(String, default="0")
+
+    project = relationship("ProjectRow", back_populates="timeline_events")
+
+    def to_model(self) -> TimelineEvent:
+        from typing import Optional as Opt
+        return TimelineEvent(
+            id=UUID(self.id),
+            title=self.title,
+            description=self.description,
+            timestamp=self.timestamp,
+            participants=[UUID(u) for u in json.loads(self.participants)],
+            location_id=UUID(self.location_id) if self.location_id else None,
+            consequences=json.loads(self.consequences),
+            order=int(self.order),
+        )
+
+    @classmethod
+    def from_model(cls, event: TimelineEvent, project_id: UUID) -> "TimelineEventRow":
+        return cls(
+            id=str(event.id),
+            project_id=str(project_id),
+            title=event.title,
+            description=event.description,
+            timestamp=event.timestamp,
+            participants=json.dumps([str(u) for u in event.participants]),
+            location_id=str(event.location_id) if event.location_id else None,
+            consequences=json.dumps(event.consequences),
+            order=str(event.order),
+        )
+
+
+class LoreEntryRow(Base):
+    __tablename__ = "lore_entries"
+
+    id = Column(String, primary_key=True)
+    project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    title = Column(String, nullable=False)
+    content = Column(String, default="")
+    category = Column(String, default="")
+    tags = Column(Text, default="[]")
+    related_entries = Column(Text, default="[]")
+    is_locked = Column(Boolean, default=False)
+
+    project = relationship("ProjectRow", back_populates="lore_entries")
+
+    def to_model(self) -> LoreEntry:
+        return LoreEntry(
+            id=UUID(self.id),
+            title=self.title,
+            content=self.content,
+            category=self.category,
+            tags=json.loads(self.tags),
+            related_entries=[UUID(u) for u in json.loads(self.related_entries)],
+            is_locked=self.is_locked,
+        )
+
+    @classmethod
+    def from_model(cls, entry: LoreEntry, project_id: UUID) -> "LoreEntryRow":
+        return cls(
+            id=str(entry.id),
+            project_id=str(project_id),
+            title=entry.title,
+            content=entry.content,
+            category=entry.category,
+            tags=json.dumps(entry.tags),
+            related_entries=json.dumps([str(u) for u in entry.related_entries]),
+            is_locked=entry.is_locked,
         )
 
 
@@ -452,6 +627,142 @@ class Database:
         async with AsyncSession(self.engine) as session:
             result = await session.execute(
                 sql_delete(CharacterRow).where(CharacterRow.id == str(character_id))
+            )
+            await session.commit()
+            return result.rowcount > 0
+
+    async def create_location(self, project_id: UUID, location: Location) -> Location:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = LocationRow.from_model(location, project_id)
+            session.add(row)
+            await session.commit()
+            return location
+
+    async def get_location(self, location_id: UUID) -> Location | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(LocationRow).where(LocationRow.id == str(location_id))
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_locations(self, project_id: UUID) -> list[Location]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(LocationRow).where(LocationRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def delete_location(self, location_id: UUID) -> bool:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                sql_delete(LocationRow).where(LocationRow.id == str(location_id))
+            )
+            await session.commit()
+            return result.rowcount > 0
+
+    async def create_faction(self, project_id: UUID, faction: Faction) -> Faction:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = FactionRow.from_model(faction, project_id)
+            session.add(row)
+            await session.commit()
+            return faction
+
+    async def get_faction(self, faction_id: UUID) -> Faction | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(FactionRow).where(FactionRow.id == str(faction_id))
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_factions(self, project_id: UUID) -> list[Faction]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(FactionRow).where(FactionRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def delete_faction(self, faction_id: UUID) -> bool:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                sql_delete(FactionRow).where(FactionRow.id == str(faction_id))
+            )
+            await session.commit()
+            return result.rowcount > 0
+
+    async def create_timeline_event(self, project_id: UUID, event: TimelineEvent) -> TimelineEvent:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = TimelineEventRow.from_model(event, project_id)
+            session.add(row)
+            await session.commit()
+            return event
+
+    async def get_timeline_event(self, event_id: UUID) -> TimelineEvent | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(TimelineEventRow).where(TimelineEventRow.id == str(event_id))
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_timeline_events(self, project_id: UUID) -> list[TimelineEvent]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(TimelineEventRow).where(TimelineEventRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def delete_timeline_event(self, event_id: UUID) -> bool:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                sql_delete(TimelineEventRow).where(TimelineEventRow.id == str(event_id))
+            )
+            await session.commit()
+            return result.rowcount > 0
+
+    async def create_lore_entry(self, project_id: UUID, entry: LoreEntry) -> LoreEntry:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            row = LoreEntryRow.from_model(entry, project_id)
+            session.add(row)
+            await session.commit()
+            return entry
+
+    async def get_lore_entry(self, entry_id: UUID) -> LoreEntry | None:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(LoreEntryRow).where(LoreEntryRow.id == str(entry_id))
+            )
+            row = result.scalar_one_or_none()
+            return row.to_model() if row else None
+
+    async def list_lore_entries(self, project_id: UUID) -> list[LoreEntry]:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                select(LoreEntryRow).where(LoreEntryRow.project_id == str(project_id))
+            )
+            return [row.to_model() for row in result.scalars().all()]
+
+    async def delete_lore_entry(self, entry_id: UUID) -> bool:
+        await self.init()
+        async with AsyncSession(self.engine) as session:
+            result = await session.execute(
+                sql_delete(LoreEntryRow).where(LoreEntryRow.id == str(entry_id))
             )
             await session.commit()
             return result.rowcount > 0
