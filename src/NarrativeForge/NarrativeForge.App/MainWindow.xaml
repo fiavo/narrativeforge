@@ -17,6 +17,10 @@
             xmlns:local="clr-namespace:NarrativeForge.App"/>
     </Window.Resources>
 
+    <Window.InputBindings>
+        <KeyBinding Key="L" Modifiers="Control" Command="{Binding GraphEditorViewModel.LayoutLastUsedCommand}"/>
+    </Window.InputBindings>
+
     <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top" Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}">
@@ -31,6 +35,13 @@
             <MenuItem Header="_Graph" Foreground="{DynamicResource Text}">
                 <MenuItem Header="_New Dialogue Tree" Command="{Binding OpenDialogueTreeCommand}" Foreground="{DynamicResource Text}"/>
                 <MenuItem Header="_New Quest Graph" Command="{Binding OpenQuestGraphCommand}" Foreground="{DynamicResource Text}"/>
+                <Separator/>
+                <MenuItem Header="_Auto Layout" Foreground="{DynamicResource Text}">
+                    <MenuItem Header="_Hierarchical" Command="{Binding GraphEditorViewModel.LayoutHierarchicalCommand}" Foreground="{DynamicResource Text}"/>
+                    <MenuItem Header="_Force-Directed" Command="{Binding GraphEditorViewModel.LayoutForceDirectedCommand}" Foreground="{DynamicResource Text}"/>
+                    <Separator/>
+                    <MenuItem Header="_Last Used (Ctrl+L)" Command="{Binding GraphEditorViewModel.LayoutLastUsedCommand}" Foreground="{DynamicResource Text}"/>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_View" Foreground="{DynamicResource Text}">
                 <MenuItem Header="_Connect to Backend" Command="{Binding ConnectCommand}" Foreground="{DynamicResource Text}"/>
