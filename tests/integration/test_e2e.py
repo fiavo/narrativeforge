@@ -534,3 +534,89 @@ async def test_rewrite_flow(client: AsyncClient):
 
     resp = await client.delete(f"/api/projects/{project_id}")
     assert resp.status_code == 204
+
+
+async def test_export_ink_format(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={
+            "name": "Ink Export Test",
+            "genre": "RPG",
+            "tone": "epic",
+            "themes": ["dialogue", "ink"],
+        },
+    )
+    assert resp.status_code == 201
+    project = resp.json()
+    project_id = project["id"]
+
+    parse_payload = {"script": INK_DIALOGUE_SCRIPT, "name": "Exported Dialogue"}
+    resp = await client.post("/api/dialogues/parse", json=parse_payload)
+    assert resp.status_code == 200
+    ink_tree = resp.json()["tree"]
+
+    export_payload = {
+        "format": "json",
+        "content": ink_tree,
+        "filename": "ink_dialogue",
+    }
+    resp = await client.post("/api/export", json=export_payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["filename"] == "ink_dialogue.json"
+    assert data["format"] == "json"
+    assert "name" in data["content"]
+    assert "Exported Dialogue" in data["content"]
+    assert "nodes" in data["content"]
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_export_json_format(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={
+            "name": "JSON Export Test",
+            "genre": "Fantasy",
+            "tone": "dark",
+            "themes": ["export", "json"],
+        },
+    )
+    assert resp.status_code == 201
+    project = resp.json()
+    project_id = project["id"]
+
+    resp = await client.get(f"/api/projects/{project_id}")
+    assert resp.status_code == 200
+    project_data = resp.json()
+
+    export_payload = {
+        "format": "json",
+        "content": project_data,
+        "filename": "project_export",
+    }
+    resp = await client.post("/api/export", json=export_payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["filename"] == "project_export.json"
+    assert data["format"] == "json"
+    parsed = json.loads(data["content"])
+    assert parsed["name"] == "JSON Export Test"
+    assert parsed["genre"] == "Fantasy"
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_export_formats_list(client: AsyncClient):
+    resp = await client.get("/api/export/formats")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "formats" in data
+    formats = data["formats"]
+    assert "json" in formats
+    assert "markdown" in formats
+    assert "text" in formats
+    assert "yaml" in formats
+    assert len(formats) == 4
