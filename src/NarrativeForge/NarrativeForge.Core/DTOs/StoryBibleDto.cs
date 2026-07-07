@@ -11,6 +11,10 @@ public class LocationDto
     public string Population { get; set; } = string.Empty;
     public List<string> NotableFeatures { get; set; } = [];
     public List<Guid> ConnectedLocationIds { get; set; } = [];
+    public List<string> Inhabitants { get; set; } = [];
+    public List<string> FactionsPresent { get; set; } = [];
+    public string Significance { get; set; } = string.Empty;
+    public bool IsLocked { get; set; } = false;
 }
 
 public class FactionDto

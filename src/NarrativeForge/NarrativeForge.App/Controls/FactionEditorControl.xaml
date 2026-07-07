@@ -1,0 +1,90 @@
+<UserControl x:Class="NarrativeForge.App.Controls.FactionEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource Surface1}">
+
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="FACTION EDITOR" FontSize="11" FontWeight="Bold"
+                   Foreground="{DynamicResource Subtext1}" Margin="12,10,12,6"/>
+
+        <TextBlock x:Name="EmptyState" DockPanel.Dock="Top" Text="Select a faction to edit"
+                   FontSize="11" Foreground="{DynamicResource Overlay1}" Margin="12,4,12,0"
+                   Visibility="Visible"/>
+
+        <ScrollViewer x:Name="EditorScrollViewer" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12"
+                      Visibility="Collapsed">
+            <StackPanel x:Name="EditorPanel" Margin="0">
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,4,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Name" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="NameTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Description" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="DescriptionTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Members" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="MembersTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One member name per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Goals" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="GoalsTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One goal per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Allies" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="AlliesTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One ally per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Enemies" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="EnemiesTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One enemy per line"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

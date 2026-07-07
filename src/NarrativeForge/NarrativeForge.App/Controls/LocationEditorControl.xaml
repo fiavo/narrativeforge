@@ -1,0 +1,123 @@
+<UserControl x:Class="NarrativeForge.App.Controls.LocationEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource Surface1}">
+
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="LOCATION EDITOR" FontSize="11" FontWeight="Bold"
+                   Foreground="{DynamicResource Subtext1}" Margin="12,10,12,6"/>
+
+        <TextBlock x:Name="EmptyState" DockPanel.Dock="Top" Text="Select a location to edit"
+                   FontSize="11" Foreground="{DynamicResource Overlay1}" Margin="12,4,12,0"
+                   Visibility="Visible"/>
+
+        <ScrollViewer x:Name="EditorScrollViewer" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12"
+                      Visibility="Collapsed">
+            <StackPanel x:Name="EditorPanel" Margin="0">
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,4,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Name" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="NameTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Type" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <ComboBox x:Name="TypeComboBox"
+                                  Foreground="{DynamicResource Text}"
+                                  Background="{DynamicResource Surface1}"
+                                  SelectionChanged="TypeComboBox_SelectionChanged">
+                            <ComboBoxItem Content="City"/>
+                            <ComboBoxItem Content="Village"/>
+                            <ComboBoxItem Content="Fortress"/>
+                            <ComboBoxItem Content="Dungeon"/>
+                            <ComboBoxItem Content="Forest"/>
+                            <ComboBoxItem Content="Mountain"/>
+                            <ComboBoxItem Content="Desert"/>
+                            <ComboBoxItem Content="Island"/>
+                            <ComboBoxItem Content="Ruins"/>
+                            <ComboBoxItem Content="Temple"/>
+                            <ComboBoxItem Content="Castle"/>
+                            <ComboBoxItem Content="Harbor"/>
+                            <ComboBoxItem Content="Wilderness"/>
+                            <ComboBoxItem Content="Other"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Description" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="DescriptionTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Connected To" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="ConnectedToTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One connected location per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Inhabitants" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="InhabitantsTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One inhabitant per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Factions Present" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="FactionsPresentTextBox"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="12"
+                                 ToolTip="One faction per line"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel>
+                        <TextBlock Text="Significance" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Subtext1}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="SignificanceTextBox"
+                                 Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}"
+                                 BorderBrush="{DynamicResource Surface2}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Surface0}" CornerRadius="6" Padding="12" Margin="12,0,12,8">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox x:Name="IsLockedCheckBox"
+                                  Content="Is Locked" FontSize="12"
+                                  Foreground="{DynamicResource Text}"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
