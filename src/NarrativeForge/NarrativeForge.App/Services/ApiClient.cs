@@ -120,6 +120,14 @@ public class ApiClient : IDisposable
         return await response.Content.ReadFromJsonAsync<StoryBibleDto>();
     }
 
+    public async Task<StoryBibleDto?> SaveStoryBibleAsync(Guid projectId, StoryBibleDto storyBible)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"/api/projects/{projectId}/story-bible", storyBible);
+        if (!response.IsSuccessStatusCode)
+            return null;
+        return await response.Content.ReadFromJsonAsync<StoryBibleDto>();
+    }
+
     public async Task<List<CharacterDto>> GetCharactersAsync(Guid projectId)
     {
         var response = await _httpClient.GetAsync($"/api/projects/{projectId}/characters");
