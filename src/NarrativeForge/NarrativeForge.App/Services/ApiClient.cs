@@ -278,6 +278,39 @@ public class ApiClient : IDisposable
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<List<VersionDto>> GetVersionsAsync(Guid projectId)
+    {
+        var response = await _httpClient.GetAsync($"/api/projects/{projectId}/versions");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<VersionDto>>() ?? [];
+    }
+
+    public async Task<VersionDto?> GetVersionAsync(Guid projectId, Guid versionId)
+    {
+        var response = await _httpClient.GetAsync($"/api/projects/{projectId}/versions/{versionId}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            return null;
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<VersionDto>();
+    }
+
+    public async Task<List<VersionDiffDto>> GetVersionDiffAsync(Guid projectId, Guid versionId)
+    {
+        var response = await _httpClient.GetAsync($"/api/projects/{projectId}/versions/{versionId}/diff");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            return [];
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<VersionDiffDto>>() ?? [];
+    }
+
+    public async Task<VersionDto?> RestoreVersionAsync(Guid projectId, Guid versionId)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"/api/projects/{projectId}/versions/{versionId}/restore", new { });
+        if (!response.IsSuccessStatusCode)
+            return null;
+        return await response.Content.ReadFromJsonAsync<VersionDto>();
+    }
+
     public void Dispose()
     {
         _httpClient.Dispose();
