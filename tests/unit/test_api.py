@@ -290,6 +290,110 @@ async def test_export_invalid_format(client: AsyncClient):
     assert "Unknown format" in resp.json()["detail"]
 
 
+async def test_import_ink_file(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "Import Test", "genre": "RPG"}
+    )
+    project_id = create_resp.json()["id"]
+
+    ink_content = """=== start ===
+Welcome, adventurer!
++ [Hello!] -> greet
++ [Goodbye] -> farewell
+
+=== greet ===
+Nice to meet you!
+-> END
+
+=== farewell ===
+Farewell!
+-> END"""
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/import",
+        json={
+            "filename": "dialogue.ink",
+            "content": ink_content,
+            "format": "ink",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "tree_id" in data
+    assert data["name"] == "dialogue"
+    assert len(data["nodes"]) > 0
+    assert len(data["edges"]) > 0
+    assert len(data["choices"]) > 0
+
+
+async def test_import_yarn_file(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "Import Yarn Test", "genre": "RPG"}
+    )
+    project_id = create_resp.json()["id"]
+
+    yarn_content = """title: Greeting
+---
+Hello there!
+-> Choice A
+-> Choice B
+===
+title: Choice A
+---
+You chose A!
+===
+title: Choice B
+---
+You chose B!
+==="""
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/import",
+        json={
+            "filename": "greeting.yarn",
+            "content": yarn_content,
+            "format": "yarn",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "tree_id" in data
+    assert data["name"] == "greeting"
+    assert len(data["nodes"]) > 0
+    assert len(data["edges"]) > 0
+    assert len(data["choices"]) > 0
+
+
+async def test_import_invalid_format(client: AsyncClient):
+    create_resp = await client.post(
+        "/api/projects", json={"name": "Import Invalid", "genre": "RPG"}
+    )
+    project_id = create_resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/import",
+        json={
+            "filename": "dialogue.txt",
+            "content": "hello",
+            "format": "txt",
+        },
+    )
+    assert resp.status_code == 400
+    assert "Unknown format" in resp.json()["detail"]
+
+
+async def test_import_project_not_found(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects/00000000-0000-0000-0000-000000000000/import",
+        json={
+            "filename": "test.ink",
+            "content": "=== start ===\nHello\n-> END",
+            "format": "ink",
+        },
+    )
+    assert resp.status_code == 404
+
+
 async def test_list_plugins(client: AsyncClient):
     resp = await client.get("/api/plugins")
     assert resp.status_code == 200

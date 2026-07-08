@@ -19,8 +19,12 @@ from NarrativeForge.Engine.agents import (
 from NarrativeForge.Engine.pipeline.orchestrator import PipelineOrchestrator
 from NarrativeForge.Engine.plugins.plugin_manager import PluginManager
 from NarrativeForge.Engine.storage.database import Database
+from NarrativeForge.Engine.importing.import_manager import SUPPORTED_EXTENSIONS
+from NarrativeForge.Engine.scripting.ink_parser import InkParser
+from NarrativeForge.Engine.scripting.yarn_parser import YarnParser
 
 EXPORT_FORMATS = ["json", "markdown", "text", "yaml"]
+IMPORT_FORMATS = ["ink", "yarn"]
 
 KNOWN_AGENTS: dict[str, type[BaseAgent]] = {
     "StoryAgent": StoryAgent,
@@ -144,6 +148,77 @@ async def export_content(body: ExportRequest):
         filename=filename,
         format=body.format,
         content=export_content,
+    )
+
+
+class ImportRequest(BaseModel):
+    filename: str = Field(description="Filename with extension (e.g. dialogue.ink)")
+    content: str = Field(description="File content to import")
+    format: str = Field(description="Import format: ink or yarn")
+
+
+class ImportResponse(BaseModel):
+    tree_id: str
+    name: str
+    nodes: dict
+    edges: list
+    choices: list = Field(default_factory=list)
+
+
+def _detect_format(filename: str) -> str:
+    ext = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    format_map = {".ink": "ink", ".yarn": "yarn"}
+    fmt = format_map.get(ext)
+    if fmt is None:
+        raise ValueError(f"Unsupported extension {ext!r}. Expected one of: {SUPPORTED_EXTENSIONS}")
+    return fmt
+
+
+@router.post("/projects/{project_id}/import", response_model=ImportResponse)
+async def import_file(project_id: UUID, body: ImportRequest):
+    project = await _db.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    fmt = body.format.lower()
+    if fmt not in IMPORT_FORMATS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown format: {fmt}. Valid formats: {', '.join(IMPORT_FORMATS)}",
+        )
+
+    if fmt == "ink":
+        parser = InkParser()
+        tree = parser.parse_dialogue(body.content)
+    else:
+        parser = YarnParser()
+        tree = parser.parse(body.content)
+
+    tree.name = body.filename.rsplit(".", 1)[0] if "." in body.filename else body.filename
+
+    nodes_data = {}
+    for k, node in tree.nodes.items():
+        nodes_data[k] = {
+            "id": node.id,
+            "type": node.type.value,
+            "content": node.content,
+            "choices": [c.model_dump() for c in node.choices],
+            "conditions": [c.model_dump() for c in node.conditions],
+            "variables_set": node.variables_set,
+            "next_node_id": node.next_node_id,
+        }
+    edges_data = [e.model_dump() for e in tree.edges]
+    choices_data = []
+    for node in tree.nodes.values():
+        for choice in node.choices:
+            choices_data.append(choice.model_dump())
+
+    return ImportResponse(
+        tree_id=tree.id,
+        name=tree.name,
+        nodes=nodes_data,
+        edges=edges_data,
+        choices=choices_data,
     )
 
 
