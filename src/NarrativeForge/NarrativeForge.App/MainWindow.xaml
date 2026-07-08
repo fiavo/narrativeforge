@@ -24,10 +24,13 @@
     <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top" Background="{DynamicResource Surface1}" Foreground="{DynamicResource Text}">
-            <MenuItem Header="_Project" Foreground="{DynamicResource Text}">
-                <MenuItem Header="_New Project" Command="{Binding NewProjectCommand}" Foreground="{DynamicResource Text}"/>
+            <MenuItem Header="_File" Foreground="{DynamicResource Text}">
+                <MenuItem Header="_Import..." Click="MenuItem_Import_Click" Foreground="{DynamicResource Text}"/>
                 <Separator/>
                 <MenuItem Header="E_xit" Click="MenuItem_Exit_Click" Foreground="{DynamicResource Text}"/>
+            </MenuItem>
+            <MenuItem Header="_Project" Foreground="{DynamicResource Text}">
+                <MenuItem Header="_New Project" Command="{Binding NewProjectCommand}" Foreground="{DynamicResource Text}"/>
             </MenuItem>
             <MenuItem Header="_Generate" Foreground="{DynamicResource Text}">
                 <MenuItem Header="_Run Generation" Command="{Binding GenerateCommand}" Foreground="{DynamicResource Text}"/>

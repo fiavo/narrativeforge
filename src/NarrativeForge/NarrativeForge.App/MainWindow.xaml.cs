@@ -59,6 +59,12 @@ public partial class MainWindow : Window
         }
     }
 
+    private void MenuItem_Import_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new ImportDialog { Owner = this };
+        dialog.ShowDialog();
+    }
+
     private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
     {
         Application.Current.Shutdown();
