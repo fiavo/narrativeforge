@@ -311,6 +311,14 @@ public class ApiClient : IDisposable
         return await response.Content.ReadFromJsonAsync<VersionDto>();
     }
 
+    public async Task<ImportResponseDto?> ImportFileAsync(Guid projectId, ImportRequestDto request)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"/api/projects/{projectId}/import", request);
+        if (!response.IsSuccessStatusCode)
+            return null;
+        return await response.Content.ReadFromJsonAsync<ImportResponseDto>();
+    }
+
     public void Dispose()
     {
         _httpClient.Dispose();
