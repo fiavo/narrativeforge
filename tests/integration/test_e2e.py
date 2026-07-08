@@ -12,6 +12,7 @@ from NarrativeForge.Engine.plugins.plugin_manager import PluginManager
 from NarrativeForge.Engine.plugins.plugin_info import PluginInfo, PluginType
 from NarrativeForge.Engine.plugins.plugin_config import PluginConfig
 from NarrativeForge.Engine.versioning import VersionManager
+from NarrativeForge.Engine.importing import ImportManager
 
 AGENT_RESPONSES = {
     "WorldAgent": json.dumps({
@@ -894,3 +895,102 @@ async def test_story_bible_faction_workflow(client: AsyncClient):
 
     resp = await client.delete(f"/api/projects/{pid}")
     assert resp.status_code == 204
+
+
+YARN_DIALOGUE_SCRIPT = """\
+title: Greeting
+---
+Hello there, adventurer.
+-> Choice
+===
+title: Choice
+---
+What would you like to do?
+-> Explore
+-> Leave
+===
+title: Explore
+---
+You venture into the unknown.
+===
+title: Leave
+---
+Farewell, traveler.
+===
+"""
+
+
+async def test_import_ink_workflow(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={
+            "name": "Ink Import E2E",
+            "genre": "RPG",
+            "tone": "epic",
+            "themes": ["import", "ink"],
+        },
+    )
+    assert resp.status_code == 201
+    project_id = resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/import",
+        json={
+            "filename": "dialogue.ink",
+            "content": INK_DIALOGUE_SCRIPT,
+            "format": "ink",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["name"] == "dialogue"
+    assert len(data["nodes"]) > 0
+    assert data["tree_id"] is not None
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+async def test_import_yarn_workflow(client: AsyncClient):
+    resp = await client.post(
+        "/api/projects",
+        json={
+            "name": "Yarn Import E2E",
+            "genre": "RPG",
+            "tone": "mysterious",
+            "themes": ["import", "yarn"],
+        },
+    )
+    assert resp.status_code == 201
+    project_id = resp.json()["id"]
+
+    resp = await client.post(
+        f"/api/projects/{project_id}/import",
+        json={
+            "filename": "dialogue.yarn",
+            "content": YARN_DIALOGUE_SCRIPT,
+            "format": "yarn",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["name"] == "dialogue"
+    assert len(data["nodes"]) > 0
+    assert data["tree_id"] is not None
+
+    resp = await client.delete(f"/api/projects/{project_id}")
+    assert resp.status_code == 204
+
+
+def test_import_format_detection():
+    mgr = ImportManager()
+
+    assert mgr.detect_format("dialogue.ink") == "ink"
+    assert mgr.detect_format("dialogue.yarn") == "yarn"
+    assert mgr.detect_format("path/to/file.ink") == "ink"
+    assert mgr.detect_format("path/to/file.yarn") == "yarn"
+
+    with pytest.raises(ValueError, match="Unsupported extension"):
+        mgr.detect_format("dialogue.txt")
+    with pytest.raises(ValueError, match="Unsupported extension"):
+        mgr.detect_format("dialogue.json")
