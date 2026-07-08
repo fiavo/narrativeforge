@@ -10,6 +10,8 @@ namespace NarrativeForge.App.Controls;
 
 public class GraphCanvas : Canvas
 {
+    public event EventHandler<FileDroppedEventArgs>? FileDropped;
+
     private readonly ScaleTransform _scaleTransform = new();
     private readonly TranslateTransform _translateTransform = new();
     private readonly TransformGroup _transformGroup;
@@ -73,12 +75,15 @@ public class GraphCanvas : Canvas
         _edgeLayer.RenderTransform = _transformGroup;
         Children.Add(_edgeLayer);
 
+        AllowDrop = true;
         MouseWheel += OnMouseWheel;
         MouseLeftButtonDown += OnMouseLeftButtonDown;
         MouseLeftButtonUp += OnMouseLeftButtonUp;
         MouseMove += OnMouseMove;
         MouseRightButtonDown += OnMouseRightButtonDown;
         MouseRightButtonUp += OnMouseRightButtonUp;
+        Drop += OnDrop;
+        DragOver += OnDragOver;
         SizeChanged += (_, _) => DrawEdges();
     }
 
@@ -331,6 +336,42 @@ public class GraphCanvas : Canvas
         _edgeLayer.Children.Add(arrow);
     }
 
+    private void OnDragOver(object sender, DragEventArgs e)
+    {
+        e.Effects = DragDropEffects.None;
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            var files = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (files is { Length: > 0 })
+            {
+                var ext = System.IO.Path.GetExtension(files[0]).ToLowerInvariant();
+                if (ext is ".ink" or ".yarn")
+                    e.Effects = DragDropEffects.Copy;
+            }
+        }
+        e.Handled = true;
+    }
+
+    private void OnDrop(object sender, DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+
+        var files = e.Data.GetData(DataFormats.FileDrop) as string[];
+        if (files is null or { Length: 0 }) return;
+
+        foreach (var file in files)
+        {
+            var ext = System.IO.Path.GetExtension(file).ToLowerInvariant();
+            if (ext is ".ink" or ".yarn")
+            {
+                var content = System.IO.File.ReadAllText(file);
+                var format = ext == ".ink" ? "ink" : "yarn";
+                FileDropped?.Invoke(this, new FileDroppedEventArgs(file, content, format));
+            }
+        }
+        e.Handled = true;
+    }
+
     public void ZoomToFit()
     {
         if (Nodes is null || Nodes.Count == 0)
@@ -362,5 +403,19 @@ public class GraphCanvas : Canvas
         _translateTransform.Y = (ActualHeight - contentHeight * scale) / 2 - (minY - padding) * scale;
 
         DrawEdges();
+    }
+}
+
+public class FileDroppedEventArgs : EventArgs
+{
+    public string FilePath { get; }
+    public string Content { get; }
+    public string Format { get; }
+
+    public FileDroppedEventArgs(string filePath, string content, string format)
+    {
+        FilePath = filePath;
+        Content = content;
+        Format = format;
     }
 }

@@ -45,6 +45,11 @@ public partial class MainViewModel : ObservableObject
 
     public ObservableCollection<ProjectDto> Projects { get; } = [];
 
+    public async Task<ImportResponseDto?> ImportFileAsync(Guid projectId, ImportRequestDto request)
+    {
+        return await _apiClient.ImportFileAsync(projectId, request);
+    }
+
     public MainViewModel()
     {
         _apiClient = new ApiClient();
