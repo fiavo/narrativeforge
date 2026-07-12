@@ -1,20 +1,59 @@
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
+# Build outputs
 dist/
 build/
-.eggs/
-*.db
-.pytest_cache/
-.ruff_cache/
-.venv/
-venv/
-env/
+*.exe
+*.dll
+*.pdb
 
-# .NET
-bin/
-obj/
-*.user
-*.suo
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+*.egg
+
+# Visual Studio
 .vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# NarrativeForge specific
+release/
+installer/
+narrativeforge-engine.spec
+*.log
+
+# pytest
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+
+# mypy
+.mypy_cache/
+
+# ruff
+.ruff_cache/
