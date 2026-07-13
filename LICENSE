@@ -1,6 +1,4 @@
-Fiavo Source Available License 1.0
-
-(FSAL-1.0)
+Fiavo Source Available License 1.0 (FSAL-1.0)
 
 Copyright © 2026 Fiavo. All Rights Reserved.
 
@@ -8,48 +6,55 @@ Copyright © 2026 Fiavo. All Rights Reserved.
 
 Preamble
 
-This Fiavo Source Available License Version 1.0 ("License") is a legally binding agreement between Fiavo ("Licensor") and any individual or legal entity ("Licensee") who accesses, downloads, installs, copies, modifies, distributes, or otherwise uses the Software.
+This Fiavo Source Available License Version 2.0 ("License") is a legally binding
+agreement between Fiavo ("Licensor") and any individual or legal entity
+("Licensee") who accesses, downloads, installs, copies, modifies, distributes, or
+otherwise uses the Software.
 
-This License governs the use of the Software published by Fiavo under this License.
+This License governs the use of the Software published by Fiavo under this
+License.
 
-The purpose of this License is to encourage learning, research, community contributions, and innovation while protecting Fiavo's commercial rights, intellectual property, trademarks, and business interests.
+The purpose of this License is to encourage learning, research, community
+contributions, and innovation while protecting Fiavo's commercial rights,
+intellectual property, trademarks, and business interests. This License is
+designed to provide a transparent legal framework that benefits both the
+community and the long-term sustainability of the project.
 
-Unless a separate written Commercial License Agreement is executed by Fiavo, every use of the Software is governed exclusively by this License.
+Unless a separate written Commercial License Agreement is executed by Fiavo,
+every use of the Software is governed exclusively by this License.
 
-By downloading, accessing, installing, copying, modifying, distributing, or using the Software, the Licensee agrees to be bound by all terms of this License.
+By downloading, accessing, installing, copying, modifying, distributing, or using
+the Software, the Licensee agrees to be bound by all terms of this License.
 
-If the Licensee does not agree to these terms, the Licensee must not access or use the Software.
+If the Licensee does not agree to these terms, the Licensee must not access or
+use the Software.
 
 ---
 
 1. Definitions
 
-For the purposes of this License, the following terms shall have the meanings set forth below.
-
 1.1 Licensor
-
-"Licensor" means Fiavo, the sole copyright holder, publisher, and owner of the Software and all associated intellectual property rights unless otherwise expressly stated.
-
----
+"Licensor" means Fiavo, the sole copyright holder, publisher, and owner of the
+Software and all associated intellectual property rights unless otherwise
+expressly stated.
 
 1.2 Software
-
-"Software" means NarrativeForge and any other software product, source code, object code, executable files, libraries, SDKs, APIs, modules, plugins, scripts, datasets, documentation, examples, templates, configuration files, user interfaces, build files, design assets, and all accompanying materials released by Fiavo under this License.
-
----
+"Software" means NarrativeForge and any other software product, source code,
+object code, executable files, libraries, SDKs, APIs, modules, plugins, scripts,
+datasets, documentation, examples, templates, configuration files, user
+interfaces, build files, design assets, and all accompanying materials released
+by Fiavo under this License.
 
 1.3 Licensee
-
-"Licensee" means any individual, company, organization, institution, government entity, educational institution, or other legal or natural person that receives or uses the Software.
-
----
+"Licensee" means any individual, company, organization, institution, government
+entity, educational institution, or other legal or natural person that receives
+or uses the Software.
 
 1.4 Commercial Use
-
-Commercial Use means any activity that directly or indirectly generates revenue, commercial value, business advantage, competitive advantage, customer acquisition, or financial benefit.
-
+Commercial Use means any activity that directly or indirectly generates revenue,
+commercial value, business advantage, competitive advantage, customer
+acquisition, or financial benefit.
 Commercial Use includes, without limitation:
-
 - selling the Software;
 - licensing the Software;
 - sublicensing the Software;
@@ -65,767 +70,493 @@ Commercial Use includes, without limitation:
 - internal business operations of a for-profit entity;
 - monetized websites or applications;
 - paid support services;
-- training sold for profit where the Software constitutes a substantial component.
-
----
+- training sold for profit where the Software constitutes a substantial
+  component.
 
 1.5 Non-Commercial Use
-
-Non-Commercial Use means personal learning, academic research, classroom education, private experimentation, security research, and evaluation that does not directly or indirectly produce commercial benefit.
-
----
+Non-Commercial Use means personal learning, academic research, classroom
+education, private experimentation, security research, evaluation of the Software
+for up to ninety (90) days by any entity, and any other use that does not
+directly or indirectly produce commercial benefit. For clarity, the 90-day
+evaluation period for commercial entities is considered Non-Commercial Use.
 
 1.6 Modification
-
-"Modification" means any alteration, enhancement, translation, adaptation, refactoring, optimization, extension, bug fix, or derivative work created from the Software.
-
----
+"Modification" means any alteration, enhancement, translation, adaptation,
+refactoring, optimization, extension, bug fix, or derivative work created from
+the Software.
 
 1.7 Distribution
-
-"Distribution" means making the Software available to any third party by any means including publication, download, transfer, hosting, physical media, or network transmission.
-
----
+"Distribution" means making the Software available to any third party by any
+means including publication, download, transfer, hosting, physical media, or
+network transmission.
 
 1.8 Fork
-
-"Fork" means a copy of the Software repository created using Git or any equivalent version control system for the purpose of development or contribution.
-
----
+"Fork" means a copy of the Software repository created using Git or any
+equivalent version control system for the purpose of development or contribution.
 
 1.9 Contribution
-
-"Contribution" means any code, documentation, translation, issue, patch, artwork, dataset, model, test, suggestion, or other material intentionally submitted to Fiavo for inclusion in the Software.
-
----
+"Contribution" means any code, documentation, translation, issue, patch, artwork,
+dataset, model, test, suggestion, or other material intentionally submitted to
+Fiavo for inclusion in the Software.
 
 1.10 Intellectual Property Rights
-
-Intellectual Property Rights include copyrights, patents, trademarks, trade secrets, database rights, design rights, and any similar legal protections recognized under applicable law.
-
----
+Intellectual Property Rights include copyrights, patents, trademarks, trade
+secrets, database rights, design rights, and any similar legal protections
+recognized under applicable law.
 
 1.11 Written Permission
-
-Written Permission means explicit authorization issued by Fiavo in writing, including signed agreements or electronic communications from officially authorized Fiavo representatives.
-
----
+Written Permission means explicit authorization issued by Fiavo in writing,
+including signed agreements or electronic communications from officially
+authorized Fiavo representatives.
 
 1.12 Commercial License
+Commercial License means a separate written agreement executed by Fiavo granting
+rights beyond those provided under this License.
 
-Commercial License means a separate written agreement executed by Fiavo granting rights beyond those provided under this License.
+1.13 Startup Entity
+"Startup Entity" means a for-profit legal entity with fewer than ten (10)
+employees and annual gross revenue of less than $1,000,000 USD (or equivalent).
+
+---
 
 2. License Grant
 
 2.1 Limited License Grant
-
-Subject to the terms and conditions of this License, Fiavo grants the Licensee a limited, non-exclusive, non-transferable, revocable license to access, use, study, and modify the Software solely for permitted Non-Commercial Use.
-
-This license does not constitute a sale, transfer, assignment, or conveyance of ownership of the Software or any Intellectual Property Rights.
-
+Subject to the terms and conditions of this License, Fiavo grants the Licensee a
+limited, non-exclusive, non-transferable, revocable license to access, use,
+study, and modify the Software solely for permitted Non-Commercial Use.
+In addition, a Startup Entity is granted the same rights for Commercial Use for a
+period of twenty-four (24) months from the date of first use of the Software,
+provided it registers its use with Fiavo. This is to support early-stage
+innovation.
+This license does not constitute a sale, transfer, assignment, or conveyance of
+ownership of the Software or any Intellectual Property Rights.
 All rights not expressly granted under this License are reserved by Fiavo.
 
----
-
 2.2 Permitted Uses
-
 The Licensee may:
-
 - access and review the source code;
 - download copies of the Software;
 - execute and test the Software;
 - study the architecture, design, and implementation;
-- modify the Software for personal, educational, research, or evaluation purposes;
+- modify the Software for personal, educational, research, or evaluation
+  purposes;
 - create private modifications;
 - create forks for non-commercial development purposes;
 - submit voluntary Contributions to Fiavo.
-
-Any permitted use remains subject to all restrictions and obligations contained in this License.
-
----
+Any permitted use remains subject to all restrictions and obligations contained
+in this License.
 
 2.3 No Commercial Rights Granted
-
-Unless the Licensee obtains a separate Commercial License from Fiavo, this License does not grant any right to:
-
-- use the Software commercially;
-- generate revenue through the Software;
-- use the Software as part of a commercial product;
-- provide commercial services based on the Software;
-- deploy the Software within a commercial organization for business purposes;
-- use the Software to create a competing commercial product;
-- offer access to the Software through paid services.
-
-Commercial rights must be separately obtained from Fiavo.
+Unless the Licensee obtains a separate Commercial License from Fiavo, or
+qualifies for the Startup Exception in Section 2.1, this License does not grant
+any right to use the Software commercially.
+Commercial rights for all other entities must be separately obtained from Fiavo.
 
 ---
 
 3. Ownership and Intellectual Property
 
 3.1 Ownership
-
-The Software and all related Intellectual Property Rights are and shall remain the exclusive property of Fiavo.
-
-The Licensee receives only the limited rights expressly granted under this License.
-
-Nothing in this License shall be interpreted as transferring ownership of:
-
-- source code;
-- object code;
-- algorithms;
-- designs;
-- documentation;
-- trademarks;
-- branding;
-- trade secrets;
-- derivative works;
-- improvements;
-- related intellectual property.
-
----
+The Software and all related Intellectual Property Rights are and shall remain
+the exclusive property of Fiavo.
+The Licensee receives only the limited rights expressly granted under this
+License.
+Nothing in this License shall be interpreted as transferring ownership of source
+code, object code, algorithms, designs, documentation, trademarks, branding,
+trade secrets, derivative works, improvements, or related intellectual property.
 
 3.2 Copyright Ownership
-
-All copyright, including but not limited to:
-
-- source code;
-- documentation;
-- software architecture;
-- user interface elements;
-- original designs;
-- technical materials;
-
-shall remain owned by Fiavo unless expressly stated otherwise.
-
-The Licensee shall not remove, alter, obscure, or replace any copyright notices, license notices, or ownership statements contained within the Software.
-
----
+All copyright shall remain owned by Fiavo unless expressly stated otherwise.
+The Licensee shall not remove, alter, obscure, or replace any copyright notices,
+license notices, or ownership statements contained within the Software.
 
 3.3 Reservation of Rights
-
 Fiavo expressly reserves all rights, title, and interest in and to the Software.
-
-Except for the limited permissions specifically granted in this License, no other rights are granted, whether express, implied, statutory, or otherwise.
-
-This includes, without limitation:
-
-- commercial exploitation rights;
-- resale rights;
-- trademark rights;
-- patent rights;
-- distribution rights;
-- sublicensing rights.
+Except for the limited permissions specifically granted in this License, no other
+rights are granted, whether express, implied, statutory, or otherwise.
 
 ---
 
 4. Restrictions
-
 The Licensee shall not, without obtaining prior written permission from Fiavo:
 
 4.1 Commercial Exploitation
-
-Use, distribute, sell, license, rent, lease, host, or otherwise commercially exploit the Software.
-
----
+Use, distribute, sell, license, rent, lease, host, or otherwise commercially
+exploit the Software beyond the express allowances for Non-Commercial Use or the
+Startup Exception.
 
 4.2 Competitive Products
-
-Create, distribute, or operate a product or service that substantially competes with NarrativeForge or any commercial Fiavo product using the Software or substantial portions thereof.
-
----
+Create, distribute, or operate a product or service that substantially competes
+with NarrativeForge or any commercial Fiavo product using the Software or
+substantial portions thereof.
 
 4.3 SaaS and Cloud Services
-
-Operate the Software as:
-
-- a Software-as-a-Service platform;
-- a cloud product;
-- an online service;
-- an API service;
-- a hosted application;
-
-where third parties receive access to functionality provided by the Software.
-
----
+Operate the Software as a SaaS platform, a cloud product, an online service, an
+API service, or a hosted application where third parties receive access to
+functionality provided by the Software, except as permitted for a Startup Entity.
 
 4.4 Branding Misuse
-
-Use the names:
-
-- Fiavo;
-- NarrativeForge;
-
-or any confusingly similar name, logo, trademark, or branding for marketing, endorsement, or commercial purposes.
-
----
+Use the names Fiavo, NarrativeForge, or any confusingly similar name, logo,
+trademark, or branding for marketing, endorsement, or commercial purposes.
 
 4.5 Removal of Notices
-
-Remove or modify:
-
-- copyright notices;
-- license notices;
-- attribution information;
-- ownership statements.
-
----
+Remove or modify copyright notices, license notices, attribution information, or
+ownership statements.
 
 4.6 Unauthorized Distribution
-
-Distribute modified or unmodified versions of the Software for commercial or revenue-generating purposes.
-
----
+Distribute modified or unmodified versions of the Software for commercial or
+revenue-generating purposes.
 
 4.7 Sublicensing
-
-Grant third parties rights to the Software that exceed the rights provided by this License.
+Grant third parties rights to the Software that exceed the rights provided by
+this License.
 
 ---
 
 5. Modification Rights
 
 5.1 Personal Modifications
-
-The Licensee may modify the Software for personal, educational, research, or evaluation purposes.
-
----
+The Licensee may modify the Software for personal, educational, research, or
+evaluation purposes.
 
 5.2 Ownership of Modifications
-
-Unless otherwise agreed in writing:
-
-- modifications created privately by the Licensee remain owned by the Licensee;
-- however, the Licensee does not receive any right to commercially exploit such modifications;
-- modifications based on the Software remain subject to this License.
-
----
+Unless otherwise agreed in writing, modifications created privately by the
+Licensee remain owned by the Licensee; however, the Licensee does not receive any
+right to commercially exploit such modifications, and modifications based on the
+Software remain subject to this License.
 
 5.3 Contributions
+Any Contribution voluntarily submitted to Fiavo may be subject to additional
+contribution terms, including a Contributor License Agreement (CLA).
 
-Any Contribution voluntarily submitted to Fiavo may be subject to additional contribution terms, including a Contributor License Agreement (CLA)
+---
 
 6. Forks, Redistribution, and Community Development
 
 6.1 Right to Fork
-
-Subject to the terms of this License, the Licensee may create forks of the Software for purposes including:
-
-- personal development;
-- educational purposes;
-- research;
-- experimentation;
-- security review;
-- community collaboration.
-
-The creation of a fork does not transfer ownership of the Software or any Intellectual Property Rights from Fiavo.
-
----
+Subject to the terms of this License, the Licensee may create forks of the
+Software for purposes including personal development, educational purposes,
+research, experimentation, security review, and community collaboration.
 
 6.2 Conditions for Forks
-
-Any fork created under this License must:
-
-- retain all copyright notices;
-- retain this License;
-- clearly identify that it is a modified version of the Software;
-- not use Fiavo trademarks without permission;
-- not represent itself as an official Fiavo product.
-
----
+Any fork must retain all copyright notices, retain this License, clearly identify
+that it is a modified version of the Software, not use Fiavo trademarks without
+permission, and not represent itself as an official Fiavo product.
 
 6.3 Official Product Status
-
-Only versions officially released or approved by Fiavo may be represented as:
-
-- official NarrativeForge releases;
-- official Fiavo products;
-- certified Fiavo distributions.
-
-A fork, modification, or derivative version shall not imply endorsement, partnership, certification, or approval by Fiavo unless expressly authorized in writing.
-
----
+Only versions officially released or approved by Fiavo may be represented as
+official. A fork shall not imply endorsement, partnership, or approval by Fiavo.
 
 6.4 Redistribution of Source Code
-
-The Licensee may redistribute copies of the Software for non-commercial purposes provided that:
-
-- this License remains included;
-- copyright notices remain intact;
-- no additional restrictions are imposed;
-- the redistribution does not generate revenue or commercial benefit.
-
----
+May redistribute copies for non-commercial purposes provided this License is
+included and no additional restrictions are imposed.
 
 6.5 Redistribution of Modified Versions
-
-Modified versions may be shared for non-commercial purposes only.
-
-Any redistribution of modified versions must:
-
-- identify significant modifications;
-- preserve attribution information;
-- include this License;
-- avoid misleading users regarding the origin of the Software.
-
----
+Modified versions may be shared for non-commercial purposes only, must identify
+modifications, and must include this License.
 
 6.6 No Commercial Redistribution
-
-Without a separate Commercial License from Fiavo, the Licensee may not:
-
-- sell copies of the Software;
-- sell modified versions;
-- include the Software in paid products;
-- distribute the Software as part of a commercial package;
-- provide paid access to the Software.
+Without a separate Commercial License, or unless the transaction is between two
+Startup Entities as part of a collaboration, the Licensee may not sell copies,
+modified versions, or provide paid access to the Software.
 
 ---
 
 7. Commercial Licensing
 
 7.1 Requirement for Commercial Use
-
-Any individual, organization, company, or entity wishing to use the Software for Commercial Use must obtain a separate Commercial License from Fiavo.
-
-A Commercial License may grant additional rights including:
-
-- commercial deployment;
-- enterprise usage;
-- SaaS operation;
-- API services;
-- redistribution rights;
-- support services;
-- warranty commitments;
-- enterprise integrations.
-
----
+Any individual, organization, company, or entity wishing to use the Software for
+Commercial Use beyond the Startup Exception must obtain a separate Commercial
+License from Fiavo.
 
 7.2 Commercial License Agreement
-
-Commercial rights shall only be granted through a separate written agreement between Fiavo and the Licensee.
-
-The Commercial License Agreement may include:
-
-- pricing;
-- subscription terms;
-- usage limits;
-- number of users;
-- number of installations;
-- geographic restrictions;
-- support obligations;
-- service-level agreements;
-- renewal conditions.
-
----
+Commercial rights shall only be granted through a separate written agreement
+between Fiavo and the Licensee.
 
 7.3 Unauthorized Commercial Use
-
-If any party uses the Software commercially without a valid Commercial License:
-
-- all permissions granted under this License shall immediately terminate;
-- the unauthorized user must cease commercial use;
-- Fiavo reserves the right to seek available legal remedies.
+If any party uses the Software commercially without a valid Commercial License or
+Startup Exception, all permissions granted under this License shall immediately
+terminate.
 
 ---
 
 8. Contributor License Terms
 
 8.1 Contributions
-
-A Contribution means any material voluntarily submitted to Fiavo for inclusion in the Software, including:
-
-- source code;
-- documentation;
-- fixes;
-- features;
-- improvements;
-- designs;
-- translations;
-- tests.
-
----
+A Contribution means any material voluntarily submitted to Fiavo for inclusion in
+the Software.
 
 8.2 Contributor Rights
-
-By submitting a Contribution, the Contributor represents that:
-
-- they have the legal right to submit the Contribution;
-- the Contribution does not knowingly violate third-party rights;
-- they have authority to grant the rights described below.
-
----
+By submitting a Contribution, the Contributor represents that they have the legal
+right to do so and that it does not knowingly violate third-party rights.
 
 8.3 License Grant to Fiavo
+The Contributor grants Fiavo a worldwide, perpetual, non-exclusive, royalty-free
+license to use, reproduce, modify, distribute, sublicense, and commercialize the
+Contribution.
 
-Unless a separate Contributor License Agreement applies, the Contributor grants Fiavo a worldwide, perpetual, non-exclusive, royalty-free license to:
+8.4 Recognition
+Fiavo will make reasonable efforts to acknowledge significant Contributors in
+project documentation or on its official website, unless the Contributor requests
+otherwise. This acknowledgment does not imply any right to compensation or
+co-ownership.
 
-- use;
-- reproduce;
-- modify;
-- distribute;
-- sublicense;
-- commercialize;
-
-the Contribution as part of the Software.
+8.5 Commercial Use of Contributions
+Fiavo may include Contributions in any version of the Software. The Contributor
+shall not acquire ownership or revenue rights solely by submitting a
+Contribution.
 
 ---
-
-8.4 Commercial Use of Contributions
-
-Fiavo may include Contributions in:
-
-- free versions;
-- commercial versions;
-- enterprise editions;
-- hosted services;
-- future products.
-
-The Contributor shall not acquire ownership or revenue rights solely by submitting a Contribution unless separately agreed in writing.
 
 9. SaaS, Cloud Services, APIs, and Hosted Deployments
 
 9.1 No Hosting Rights
-
-Unless a separate Commercial License is obtained from Fiavo, the Licensee is not granted permission to host, operate, provide access to, or make available the Software to third parties through any network, cloud infrastructure, or online platform.
-
----
+Unless a separate Commercial License is obtained from Fiavo, or the Licensee is a
+qualifying Startup Entity, the Licensee is not granted permission to host,
+operate, provide access to, or make available the Software to third parties
+through any network, cloud infrastructure, or online platform.
 
 9.2 Software-as-a-Service Restrictions
-
-Without prior written authorization from Fiavo, the Licensee shall not:
-
-- operate the Software as a Software-as-a-Service (SaaS) product;
-- allow users to access the Software remotely through the internet;
-- provide Software functionality as a paid or free online service;
-- create a hosted version of NarrativeForge for third-party access.
-
----
+Without prior written authorization from Fiavo, the Licensee shall not operate
+the Software as a SaaS product, allow users to access the Software remotely, or
+create a hosted version for third-party access, except as permitted for a Startup
+Entity.
 
 9.3 API and Service Restrictions
-
-The Licensee may not:
-
-- expose the Software through a public API;
-- create commercial APIs based on the Software;
-- provide automated access to Software functionality;
-- sell access to services powered primarily by the Software.
-
----
+The Licensee may not expose the Software through a public API, create commercial
+APIs based on the Software, or sell access to services powered primarily by the
+Software.
 
 9.4 Internal Enterprise Deployment
-
-Use of the Software by a commercial organization for internal business operations requires a Commercial License.
-
-Examples include, without limitation:
-
-- internal company tools;
-- employee-facing applications;
-- customer support systems;
-- production systems;
-- business workflows.
+Use of the Software by a commercial organization for internal business operations
+requires a Commercial License, unless the entity qualifies as a Startup Entity.
 
 ---
 
 10. Artificial Intelligence and Data Usage
 
 10.1 AI Model Training Restriction
-
-Unless expressly permitted by Fiavo in writing, the Licensee may not use the Software or substantial portions of its source code for:
-
-- training artificial intelligence models;
-- fine-tuning machine learning models;
-- creating datasets;
-- generating derivative AI systems;
-- automated code extraction or learning systems.
-
----
+Unless expressly permitted by Fiavo in writing, the Licensee may not use the
+Software or substantial portions of its source code for training artificial
+intelligence models, fine-tuning machine learning models, creating datasets,
+generating derivative AI systems, or automated code extraction or learning
+systems.
 
 10.2 Dataset Extraction
-
-The Licensee may not:
-
-- scrape;
-- extract;
-- collect;
-- redistribute;
-
-substantial portions of the Software, documentation, assets, or generated materials for the purpose of creating competing datasets or commercial products.
-
----
+The Licensee may not scrape, extract, collect, or redistribute substantial
+portions of the Software, documentation, assets, or generated materials for the
+purpose of creating competing datasets or commercial products.
 
 10.3 AI-Assisted Development
-
-The use of general-purpose development tools for personal learning or non-commercial modification is permitted, provided that such use does not violate other restrictions in this License.
+The use of general-purpose development tools for personal learning or non-
+commercial modification is permitted, provided that such use does not violate
+other restrictions in this License.
 
 ---
 
 11. Reverse Engineering and Security
 
 11.1 Reverse Engineering
-
-To the maximum extent permitted by applicable law, the Licensee shall not:
-
-- reverse engineer;
-- decompile;
-- disassemble;
-- extract proprietary components;
-
-of any compiled or distributed version of the Software, except where such restriction is prohibited by mandatory law.
-
----
+To the maximum extent permitted by applicable law, the Licensee shall not reverse
+engineer, decompile, disassemble, or extract proprietary components of any
+compiled or distributed version of the Software, except where such restriction is
+prohibited by mandatory law.
 
 11.2 Security Research
-
-Nothing in this License prevents legitimate security research conducted:
-
-- for educational purposes;
-- for responsible vulnerability disclosure;
-- within applicable legal boundaries.
-
----
+Nothing in this License prevents legitimate security research conducted for
+educational purposes, for responsible vulnerability disclosure, or within
+applicable legal boundaries.
 
 11.3 Vulnerability Disclosure
-
-A Licensee who discovers a security vulnerability should report it responsibly to Fiavo before public disclosure whenever reasonably possible.
+A Licensee who discovers a security vulnerability should report it responsibly to
+Fiavo before public disclosure whenever reasonably possible.
 
 ---
 
 12. Intellectual Property Protection
 
 12.1 Patents
-
-All patent rights related to the Software remain the property of Fiavo unless expressly granted under a separate written agreement.
-
-No patent license is granted under this License except where such license is legally required.
-
----
+All patent rights related to the Software remain the property of Fiavo unless
+expressly granted under a separate written agreement.
 
 12.2 Trademarks
-
-This License does not grant any right to use:
-
-- Fiavo;
-- NarrativeForge;
-- logos;
-- product names;
-- slogans;
-- branding materials;
-
-for commercial purposes.
-
----
+This License does not grant any right to use Fiavo, NarrativeForge, logos,
+product names, slogans, or branding materials for commercial purposes.
 
 12.3 Brand Protection
-
-The Licensee shall not:
-
-- register confusingly similar trademarks;
-- imply official affiliation with Fiavo;
-- market derivative products as official Fiavo products;
-- use Fiavo branding without written permission.
-
----
+The Licensee shall not register confusingly similar trademarks, imply official
+affiliation with Fiavo, or use Fiavo branding without written permission.
 
 12.4 Trade Secrets
+Any unpublished information, private documentation, internal tools, unreleased
+features, or confidential materials provided by Fiavo shall remain confidential
+and shall not be disclosed without authorization.
 
-Any unpublished information, private documentation, internal tools, unreleased features, or confidential materials provided by Fiavo shall remain confidential and shall not be disclosed without authorization.
+---
 
 13. Termination
 
 13.1 Automatic Termination
-
-The rights granted under this License shall automatically terminate if the Licensee:
-
-- violates any term or condition of this License;
-- engages in unauthorized Commercial Use;
-- removes copyright or ownership notices;
-- misuses Fiavo trademarks;
-- distributes the Software in violation of this License.
-
----
+The rights granted under this License shall automatically terminate if the
+Licensee violates any term or condition of this License.
 
 13.2 Effect of Termination
-
-Upon termination of this License, the Licensee must immediately:
-
-- stop using the Software;
-- stop distributing the Software;
-- remove unauthorized copies where legally required;
-- cease any prohibited activity involving the Software.
-
-Termination does not affect rights or obligations that by their nature should survive termination.
-
----
+Upon termination, the Licensee must immediately stop using and distributing the
+Software and cease any prohibited activity.
 
 13.3 No Waiver
-
-Failure by Fiavo to enforce any provision of this License shall not constitute a waiver of Fiavo's right to enforce that provision or any other provision in the future.
+Failure by Fiavo to enforce any provision shall not constitute a waiver of
+Fiavo's right to enforce that provision in the future.
 
 ---
 
 14. Warranty Disclaimer
 
 14.1 Software Provided "AS IS"
-
-THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE.
-
----
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE.
 
 14.2 No Guarantee
-
-Fiavo does not guarantee that the Software:
-
-- will operate without errors;
-- will meet specific requirements;
-- will be compatible with all systems;
-- will remain available;
-- will be free from vulnerabilities;
-- will produce specific results.
-
----
+Fiavo does not guarantee that the Software will operate without errors, meet
+specific requirements, or be compatible with all systems.
 
 14.3 Disclaimer of Implied Warranties
-
-To the maximum extent permitted by applicable law, Fiavo disclaims all implied warranties, including but not limited to:
-
-- merchantability;
-- fitness for a particular purpose;
-- non-infringement;
-- accuracy;
-- reliability.
+To the maximum extent permitted by applicable law, Fiavo disclaims all implied
+warranties, including but not limited to merchantability, fitness for a
+particular purpose, and non-infringement.
 
 ---
 
 15. Limitation of Liability
 
 15.1 Exclusion of Damages
-
-To the maximum extent permitted by applicable law, Fiavo shall not be liable for:
-
-- indirect damages;
-- incidental damages;
-- consequential damages;
-- special damages;
-- loss of profits;
-- loss of revenue;
-- loss of data;
-- business interruption.
-
----
+To the maximum extent permitted by applicable law, Fiavo shall not be liable for
+any indirect, incidental, consequential, or special damages, loss of profits, loss
+of revenue, loss of data, or business interruption.
 
 15.2 Maximum Liability
-
-To the maximum extent permitted by applicable law, Fiavo's total liability arising from or related to this License shall not exceed the amount paid by the Licensee to Fiavo under a valid Commercial License during the twelve (12) months preceding the event giving rise to the claim.
-
-If no Commercial License exists, Fiavo shall have no monetary liability to the Licensee except where prohibited by applicable law.
-
----
-
-15.3 Legal Limitations
-
-Some jurisdictions do not allow certain limitations of liability. In such jurisdictions, liability shall be limited to the greatest extent permitted by applicable law.
+Fiavo's total liability shall not exceed the amount paid by the Licensee under a
+valid Commercial License during the twelve (12) months preceding the claim. If no
+Commercial License exists, Fiavo shall have no monetary liability except where
+prohibited by applicable law.
 
 ---
 
 16. Indemnification
 
 16.1 Licensee Responsibility
-
-The Licensee agrees to defend, indemnify, and hold harmless Fiavo, its owners, contributors, employees, and representatives from claims, damages, losses, liabilities, and expenses arising from:
-
-- misuse of the Software;
-- violation of this License;
-- unauthorized Commercial Use;
-- violation of third-party rights;
-- unlawful distribution or modification.
-
----
-
-16.2 Commercial Users
-
-Commercial License holders may have different indemnification obligations as defined in their separate Commercial License Agreement.
+The Licensee agrees to indemnify and hold harmless Fiavo from claims arising from
+misuse of the Software, violation of this License, or unauthorized Commercial
+Use.
 
 ---
 
 17. Privacy and Data Protection
 
 17.1 No Collection Through License
-
-This License itself does not authorize Fiavo to collect personal information from Licensees.
-
-Any collection or processing of personal data shall be governed by applicable privacy policies and laws.
-
----
+This License itself does not authorize Fiavo to collect personal information.
 
 17.2 Compliance With Privacy Laws
-
-Where applicable, users are responsible for ensuring compliance with:
-
-- privacy regulations;
-- data protection requirements;
-- user consent obligations.
+Users are responsible for ensuring compliance with applicable privacy and data
+protection laws.
 
 ---
 
-17.3 Personal Data Processing
-
-The Licensee shall not use the Software in a manner that violates applicable privacy or data protection laws.
-
 18. Export Control and Sanctions
+
 18.1 Compliance with Export Laws
-The Licensee shall comply with all applicable export control, import control, sanctions, embargo, and international trade laws applicable in the jurisdictions where the Software is used, distributed, or made available.
-Nothing in this License authorizes any activity prohibited by applicable export control or sanctions laws.
+The Licensee shall comply with all applicable export control, import control,
+sanctions, embargo, and international trade laws.
+
 18.2 Restricted Parties
-The Software may not be provided, exported, re-exported, or otherwise made available where such action is prohibited under applicable law.
-Each Licensee is solely responsible for determining whether use of the Software is lawful within their jurisdiction.
-19. Governing Law
+The Software may not be provided where such action is prohibited under applicable
+law.
+
+---
+
+19. Governing Law and Dispute Resolution
+
 19.1 Governing Law
-This License shall be governed by the laws expressly designated in the applicable Commercial License Agreement or, where no such agreement exists, by the laws designated by Fiavo at the time enforcement becomes necessary, to the extent permitted by applicable law.
-19.2 Mandatory Local Laws
-Nothing in this License shall exclude or limit mandatory consumer or statutory rights that cannot legally be waived under applicable law.
-Where a provision of this License conflicts with mandatory law, only the conflicting portion shall be modified to the minimum extent necessary, while the remainder of this License shall remain in full force and effect.
-20. Dispute Resolution
+This License shall be governed by and construed in accordance with the
+substantive laws of Switzerland. The application of the United Nations Convention
+on Contracts for the International Sale of Goods is expressly excluded.
+
+19.2 Dispute Resolution
+Any dispute, controversy, or claim arising out of or relating to this License
+shall be resolved by arbitration in accordance with the Swiss Rules of
+International Arbitration of the Swiss Arbitration Centre. The seat of the
+arbitration shall be Zurich, Switzerland. The arbitral proceedings shall be
+conducted in English.
+
+19.3 Mandatory Local Laws
+Nothing in this License shall exclude or limit mandatory consumer or statutory
+rights that cannot legally be waived under the law of the Licensee's domicile.
+
+---
+
+20. Good Faith Negotiation
+
 20.1 Good Faith Negotiation
-Before initiating formal legal proceedings, the parties agree to make reasonable efforts to resolve disputes through good-faith discussions.
-20.2 Mediation
-Where appropriate, the parties may mutually agree to attempt mediation before litigation.
-20.3 Legal Proceedings
-Nothing in this License prevents Fiavo from seeking injunctive relief or other legal remedies where unauthorized commercial use, intellectual property infringement, or misuse of the Software may cause irreparable harm.
+Before initiating arbitration, the parties agree to make reasonable efforts to
+resolve disputes through good-faith discussions.
+
+---
+
 21. Force Majeure
-Fiavo shall not be liable for delays or failures in performance resulting from events beyond its reasonable control, including but not limited to:
-natural disasters;
-war;
-terrorism;
-cyberattacks;
-government actions;
-labor disputes;
-power failures;
-internet outages.
+
+Fiavo shall not be liable for delays or failures in performance resulting from
+events beyond its reasonable control, including but not limited to natural
+disasters, war, terrorism, cyberattacks, government actions, labor disputes,
+power failures, or internet outages.
+
+---
+
 22. Severability
-If any provision of this License is determined to be invalid, illegal, or unenforceable under applicable law, the remaining provisions shall remain valid and enforceable to the fullest extent permitted by law.
-The invalid provision shall be interpreted or modified only to the extent necessary to preserve the original intent of this License.
+
+If any provision of this License is determined to be invalid, illegal, or
+unenforceable, the remaining provisions shall remain valid and enforceable. The
+invalid provision shall be interpreted or modified only to the extent necessary
+to preserve the original intent of this License.
+
+---
+
 23. Assignment
-The Licensee may not assign, transfer, sublicense, or otherwise transfer any rights granted under this License without prior written consent from Fiavo.
-Fiavo may assign this License or any related rights in connection with a merger, acquisition, corporate restructuring, sale of assets, or other lawful business transaction.
+
+The Licensee may not assign or transfer any rights granted under this License
+without prior written consent from Fiavo. Fiavo may assign this License in
+connection with a merger, acquisition, or sale of assets.
+
+---
+
 24. Entire Agreement
-This License constitutes the complete agreement between Fiavo and the Licensee concerning the Software.
-It supersedes all prior oral or written understandings relating to the Software unless a separate written Commercial License Agreement expressly provides otherwise.
+
+This License constitutes the complete agreement between Fiavo and the Licensee
+concerning the Software, unless a separate written Commercial License Agreement
+expressly provides otherwise.
+
+---
+
 25. Survival
-The following provisions shall survive termination of this License:
-Ownership
-Copyright
-Intellectual Property
-Trademarks
-Limitation of Liability
-Warranty Disclaimer
-Indemnification
-Governing Law
-Dispute Resolution
-Confidentiality
-Any provision that by its nature is intended to survive termination.
+
+The following provisions shall survive termination of this License: Ownership,
+Copyright, Intellectual Property, Trademarks, Limitation of Liability, Warranty
+Disclaimer, Indemnification, Governing Law, Dispute Resolution, Confidentiality,
+and any provision that by its nature is intended to survive termination.
+
+---
+
 26. License Versions
-Fiavo may publish revised versions of this License.
-Unless expressly stated otherwise, each copy of the Software shall remain subject to the version of the License under which it was originally distributed.
-New versions of this License shall not automatically apply retroactively.
+
+Fiavo may publish revised versions of this License. Unless expressly stated
+otherwise, each copy of the Software shall remain subject to the version of the
+License under which it was originally distributed. New versions of this License
+shall not automatically apply retroactively.
+
+---
+
 27. Contact
-Commercial licensing requests, legal notices, trademark inquiries, security reports, and other communications regarding this License should be directed to the contact information designated by Fiavo through its official channels.
+
+Commercial licensing requests, legal notices, trademark inquiries, security
+reports, and other communications regarding this License should be directed to
+the contact information designated by Fiavo through its official channels.
