@@ -65,5 +65,8 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
+    import sys
 
-    uvicorn.run("main:app", host=config.host, port=config.port, reload=True)
+    # Disable reload when running from PyInstaller executable
+    is_frozen = getattr(sys, 'frozen', False)
+    uvicorn.run("main:app", host=config.host, port=config.port, reload=not is_frozen)
