@@ -57,7 +57,7 @@ A professional-grade AI-powered narrative engine capable of managing AAA-scale g
 ## Installation
 
 ### From Release
-1. Download the latest release from [Releases](https://github.com/narrativeforge/narrativeforge/releases)
+1. Download the latest release from [Releases](https://github.com/fiavo/narrativeforge/releases/tag/v1.0.0)
 2. Extract the ZIP file
 3. Run `NarrativeForge.bat`
 
