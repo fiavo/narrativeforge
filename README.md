@@ -1,5 +1,11 @@
 # NarrativeForge
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![Tests](https://img.shields.io/badge/tests-343%20passing-brightgreen)](https://github.com/fiavo/narrativeforge)
+[![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
+[![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)](https://github.com/fiavo/narrativeforge/releases/tag/v1.0.0)
+
 **AI-Powered Story Generation and Narrative Design Platform for Game Developers**
 
 A professional-grade AI-powered narrative engine capable of managing AAA-scale game worlds, generating consistent stories, quests, and dialogue, and acting as a co-writer and narrative designer.
