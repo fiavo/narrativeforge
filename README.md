@@ -5,6 +5,11 @@
 [![Tests](https://img.shields.io/badge/tests-343%20passing-brightgreen)](https://github.com/fiavo/narrativeforge)
 [![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)](https://github.com/fiavo/narrativeforge/releases/tag/v1.0.0)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-0078d4.svg)](https://www.microsoft.com/windows/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688.svg)](https://fastapi.tiangolo.com/)
+[![WPF](https://img.shields.io/badge/WPF-.NET_9-9b4dca.svg)](https://docs.microsoft.com/dotnet/desktop/wpf/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
 
 **AI-Powered Story Generation and Narrative Design Platform for Game Developers**
 
