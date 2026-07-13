@@ -4,6 +4,7 @@ build/
 *.exe
 *.dll
 *.pdb
+mimo.exe
 
 # Python
 __pycache__/
