@@ -173,7 +173,7 @@ python build_release.py
 
 ## License
 
-FSAL License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Contributing
 
